@@ -6,7 +6,7 @@
 
 ## Apartment Management
 - **GET /api/apartments** → [get-apartments-implementation-plan.md](get-apartments-implementation-plan.md) - done
-- **POST /api/apartments** → [post-apartments-implementation-plan.md](post-apartments-implementation-plan.md)
+- **POST /api/apartments** → [post-apartments-implementation-plan.md](post-apartments-implementation-plan.md) - done
 - **GET /api/apartments/:id** → [get-apartments-id-implementation-plan.md](get-apartments-id-implementation-plan.md)
 - **PATCH /api/apartments/:id** → [patch-apartments-id-implementation-plan.md](patch-apartments-id-implementation-plan.md)
 - **DELETE /api/apartments/:id** → [delete-apartments-id-implementation-plan.md](delete-apartments-id-implementation-plan.md)

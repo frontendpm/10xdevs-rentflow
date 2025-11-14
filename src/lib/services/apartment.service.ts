@@ -2,7 +2,10 @@ import type { SupabaseClient } from "@/db/supabase.client";
 import type {
   ApartmentListItemOwnerDTO,
   ApartmentListItemTenantDTO,
+  CreateApartmentCommand,
 } from "@/types";
+import type { Tables } from "@/db/database.types";
+import { ForbiddenError } from "@/lib/errors";
 
 /**
  * Serwis odpowiedzialny za operacje na mieszkaniach dla endpointu GET /api/apartments.
@@ -169,6 +172,54 @@ export class ApartmentService {
         },
       },
     ];
+  }
+
+  /**
+   * Tworzy nowe mieszkanie dla właściciela.
+   *
+   * @param userId - ID użytkownika (auth.uid())
+   * @param command - Dane mieszkania do utworzenia
+   * @throws {ForbiddenError} - Jeśli użytkownik nie jest właścicielem
+   * @throws {Error} - Jeśli nie udało się utworzyć mieszkania
+   */
+  async createApartment(
+    userId: string,
+    command: CreateApartmentCommand,
+  ): Promise<Tables<'apartments'>> {
+    const { data: user, error: userError } = await this.supabase
+      .from('users')
+      .select('role')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !user) {
+      throw new Error('Nie znaleziono użytkownika');
+    }
+
+    if (user.role !== 'owner') {
+      throw new ForbiddenError('Tylko właściciele mogą dodawać mieszkania');
+    }
+
+    const { data: apartment, error: insertError } = await this.supabase
+      .from('apartments')
+      .insert({
+        name: command.name,
+        address: command.address,
+        owner_id: userId,
+        created_by: userId
+      })
+      .select()
+      .single();
+
+    if (insertError || !apartment) {
+      console.error('[ApartmentService.createApartment] Błąd tworzenia mieszkania:', {
+        userId,
+        error: insertError,
+      });
+      throw new Error('Nie udało się utworzyć mieszkania');
+    }
+
+    return apartment;
   }
 }
 
