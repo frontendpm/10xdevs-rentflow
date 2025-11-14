@@ -7,10 +7,10 @@
 ## Apartment Management
 - **GET /api/apartments** → [get-apartments-implementation-plan.md](get-apartments-implementation-plan.md) - done
 - **POST /api/apartments** → [post-apartments-implementation-plan.md](post-apartments-implementation-plan.md) - done
-- **GET /api/apartments/:id** → [get-apartments-id-implementation-plan.md](get-apartments-id-implementation-plan.md)
-- **PATCH /api/apartments/:id** → [patch-apartments-id-implementation-plan.md](patch-apartments-id-implementation-plan.md)
-- **DELETE /api/apartments/:id** → [delete-apartments-id-implementation-plan.md](delete-apartments-id-implementation-plan.md)
-- **GET /api/apartments/:id/summary** → [get-apartments-id-summary-implementation-plan.md](get-apartments-id-summary-implementation-plan.md)
+- **GET /api/apartments/:id** → [get-apartments-id-implementation-plan.md](get-apartments-id-implementation-plan.md) - done
+- **PATCH /api/apartments/:id** → [patch-apartments-id-implementation-plan.md](patch-apartments-id-implementation-plan.md) - done
+- **DELETE /api/apartments/:id** → [delete-apartments-id-implementation-plan.md](delete-apartments-id-implementation-plan.md) - done
+- **GET /api/apartments/:id/summary** → [get-apartments-id-summary-implementation-plan.md](get-apartments-id-summary-implementation-plan.md) - done
 
 ## Invitation Management
 - **POST /api/apartments/:id/invitations** → [post-apartments-id-invitations-implementation-plan.md](post-apartments-id-invitations-implementation-plan.md)

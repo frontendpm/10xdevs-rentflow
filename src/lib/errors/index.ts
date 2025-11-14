@@ -26,3 +26,10 @@ export class ValidationError extends Error {
   }
 }
 
+export class ApartmentHasLeasesError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ApartmentHasLeasesError';
+  }
+}
+

@@ -2,10 +2,14 @@ import type { SupabaseClient } from "@/db/supabase.client";
 import type {
   ApartmentListItemOwnerDTO,
   ApartmentListItemTenantDTO,
+  ApartmentDetailsDTO,
   CreateApartmentCommand,
+  UpdateApartmentCommand,
+  ApartmentSummaryDTO,
+  FinancialSummary,
 } from "@/types";
 import type { Tables } from "@/db/database.types";
-import { ForbiddenError } from "@/lib/errors";
+import { ForbiddenError, ApartmentHasLeasesError } from "@/lib/errors";
 
 /**
  * Serwis odpowiedzialny za operacje na mieszkaniach dla endpointu GET /api/apartments.
@@ -220,6 +224,255 @@ export class ApartmentService {
     }
 
     return apartment;
+  }
+
+  /**
+   * Pobiera szczegółowe informacje o konkretnym mieszkaniu wraz z danymi o aktywnym najmie.
+   * 
+   * RLS automatycznie filtruje wyniki:
+   * - Owner może zobaczyć tylko swoje mieszkania
+   * - Tenant może zobaczyć tylko mieszkanie z aktywnym najmem
+   * 
+   * @param apartmentId - UUID mieszkania
+   * @returns Dane mieszkania z opcjonalnym lease info lub null jeśli nie znaleziono
+   * @throws {Error} - Jeśli wystąpi błąd zapytania do bazy
+   */
+  async getApartmentDetails(
+    apartmentId: string
+  ): Promise<ApartmentDetailsDTO | null> {
+    // Query z LEFT JOIN na aktywny najem i lokatora
+    const { data, error } = await this.supabase
+      .from('apartments')
+      .select(`
+        *,
+        leases!left (
+          id,
+          status,
+          start_date,
+          tenant_id,
+          users!leases_tenant_id_fkey (
+            id,
+            full_name,
+            email
+          )
+        )
+      `)
+      .eq('id', apartmentId)
+      .eq('leases.status', 'active')
+      .maybeSingle();
+
+    if (error) {
+      console.error('[ApartmentService.getApartmentDetails] Błąd pobierania mieszkania:', {
+        apartmentId,
+        error,
+      });
+      throw error;
+    }
+
+    // RLS może zwrócić null jeśli użytkownik nie ma dostępu
+    if (!data) {
+      return null;
+    }
+
+    // Transformacja do DTO
+    const apartment: ApartmentDetailsDTO = {
+      ...data,
+    };
+
+    // Dodanie lease info jeśli istnieje aktywny najem
+    if (data.leases && Array.isArray(data.leases) && data.leases.length > 0) {
+      const lease = data.leases[0];
+      if (lease && lease.users) {
+        apartment.lease = {
+          id: lease.id,
+          status: lease.status,
+          start_date: lease.start_date,
+          tenant: {
+            id: lease.users.id,
+            full_name: lease.users.full_name,
+            email: lease.users.email,
+          },
+        };
+      }
+    }
+
+    // Usuń pole leases z response (zostało przetransformowane do lease)
+    delete (apartment as any).leases;
+
+    return apartment;
+  }
+
+  /**
+   * Aktualizuje dane mieszkania (partial update).
+   * Tylko właściciel może edytować swoje mieszkanie.
+   * 
+   * @param apartmentId - UUID mieszkania
+   * @param command - Dane do aktualizacji (name i/lub address)
+   * @returns Zaktualizowane mieszkanie lub null jeśli nie znaleziono/brak dostępu
+   * @throws {Error} - Jeśli wystąpi błąd zapytania do bazy
+   */
+  async updateApartment(
+    apartmentId: string,
+    command: UpdateApartmentCommand
+  ): Promise<Tables<'apartments'> | null> {
+    const updateData: Partial<Tables<'apartments'>> = {};
+    
+    if (command.name !== undefined) {
+      updateData.name = command.name;
+    }
+    if (command.address !== undefined) {
+      updateData.address = command.address;
+    }
+
+    const { data, error } = await this.supabase
+      .from('apartments')
+      .update(updateData)
+      .eq('id', apartmentId)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error('[ApartmentService.updateApartment] Błąd aktualizacji mieszkania:', {
+        apartmentId,
+        error,
+      });
+      throw error;
+    }
+
+    return data;
+  }
+
+  /**
+   * Usuwa mieszkanie z bazy danych.
+   * Tylko właściciel może usunąć swoje mieszkanie.
+   * Database trigger zapobiega usunięciu mieszkania z najmami.
+   * 
+   * @param apartmentId - UUID mieszkania
+   * @returns true jeśli usunięto, false jeśli nie znaleziono
+   * @throws {ApartmentHasLeasesError} - Jeśli mieszkanie ma najmy (trigger)
+   * @throws {Error} - Jeśli wystąpi inny błąd bazy danych
+   */
+  async deleteApartment(apartmentId: string): Promise<boolean> {
+    const { error, count } = await this.supabase
+      .from('apartments')
+      .delete({ count: 'exact' })
+      .eq('id', apartmentId);
+
+    if (error) {
+      if (
+        error.code === 'P0001' ||
+        error.message?.includes('existing leases')
+      ) {
+        throw new ApartmentHasLeasesError(
+          'Nie można usunąć mieszkania z istniejącymi najmami. Najpierw usuń wszystkie najmy.'
+        );
+      }
+      
+      console.error('[ApartmentService.deleteApartment] Błąd usuwania mieszkania:', {
+        apartmentId,
+        error,
+      });
+      throw error;
+    }
+
+    return count !== null && count > 0;
+  }
+
+  /**
+   * Pobiera podsumowanie mieszkania z metrykami finansowymi.
+   * Tylko dla właścicieli.
+   * 
+   * @param apartmentId - UUID mieszkania
+   * @returns Podsumowanie mieszkania lub null jeśli nie znaleziono
+   * @throws {Error} - Jeśli wystąpi błąd zapytania do bazy
+   */
+  async getApartmentSummary(
+    apartmentId: string
+  ): Promise<ApartmentSummaryDTO | null> {
+    const { data: apartment, error: aptError } = await this.supabase
+      .from('apartments')
+      .select(`
+        id,
+        name,
+        address,
+        leases!left (
+          id,
+          status,
+          tenant:users!leases_tenant_id_fkey (
+            full_name
+          )
+        )
+      `)
+      .eq('id', apartmentId)
+      .eq('leases.status', 'active')
+      .maybeSingle();
+
+    if (aptError) {
+      console.error('[ApartmentService.getApartmentSummary] Błąd pobierania mieszkania:', {
+        apartmentId,
+        error: aptError,
+      });
+      throw aptError;
+    }
+
+    if (!apartment) {
+      return null;
+    }
+
+    let financialSummary: FinancialSummary = {
+      total_unpaid: 0,
+      total_partially_paid: 0,
+      total_overdue: 0,
+      upcoming_charges_count: 0
+    };
+
+    const activeLease = apartment.leases && Array.isArray(apartment.leases) && apartment.leases.length > 0 
+      ? apartment.leases[0] 
+      : null;
+
+    if (activeLease) {
+      const { data: charges } = await this.supabase
+        .from('charges_with_status')
+        .select('payment_status, remaining_amount, is_overdue, due_date')
+        .eq('lease_id', activeLease.id);
+
+      if (charges && charges.length > 0) {
+        const today = new Date().toISOString().split('T')[0];
+        
+        financialSummary = {
+          total_unpaid: charges
+            .filter(c => c.payment_status === 'unpaid')
+            .reduce((sum, c) => sum + (c.remaining_amount || 0), 0),
+          total_partially_paid: charges
+            .filter(c => c.payment_status === 'partially_paid')
+            .reduce((sum, c) => sum + (c.remaining_amount || 0), 0),
+          total_overdue: charges
+            .filter(c => c.is_overdue)
+            .reduce((sum, c) => sum + (c.remaining_amount || 0), 0),
+          upcoming_charges_count: charges
+            .filter(c => c.due_date && c.due_date >= today && c.payment_status !== 'paid')
+            .length
+        };
+      }
+    }
+
+    const summary: ApartmentSummaryDTO = {
+      apartment: {
+        id: apartment.id,
+        name: apartment.name,
+        address: apartment.address
+      },
+      lease: activeLease && activeLease.tenant ? {
+        id: activeLease.id,
+        status: activeLease.status,
+        tenant: {
+          full_name: activeLease.tenant.full_name
+        }
+      } : undefined,
+      financial_summary: financialSummary
+    };
+
+    return summary;
   }
 }
 
