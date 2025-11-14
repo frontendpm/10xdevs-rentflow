@@ -1,0 +1,65 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title ? `${title} | Rentflow` : "Rentflow - Kreator startu"}</title>
+  </head>
+  <body class="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <header class="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+      <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <div class="flex items-center">
+          <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
+            Rentflow
+          </h1>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <slot />
+    </main>
+
+    <footer class="mt-auto border-t border-neutral-200 bg-white py-6 dark:border-neutral-800 dark:bg-neutral-900">
+      <div class="mx-auto max-w-7xl px-4 text-center text-sm text-neutral-600 dark:text-neutral-400 sm:px-6 lg:px-8">
+        <div class="space-x-4">
+          <a
+            href="/regulamin"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-neutral-900 dark:hover:text-neutral-50 transition-colors underline"
+          >
+            Regulamin
+          </a>
+          <a
+            href="/polityka-prywatnosci"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-neutral-900 dark:hover:text-neutral-50 transition-colors underline"
+          >
+            Polityka Prywatności
+          </a>
+          <a
+            href="mailto:pomoc@rentflow.pl"
+            class="hover:text-neutral-900 dark:hover:text-neutral-50 transition-colors underline"
+          >
+            pomoc@rentflow.pl
+          </a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+

@@ -6,18 +6,19 @@ const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Pobierz token z nagłówka Authorization
   const authHeader = context.request.headers.get("Authorization");
   const token = authHeader?.replace("Bearer ", "");
 
-  // Utwórz Supabase client z tokenem (jeśli istnieje)
   const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     global: {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     },
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
   });
 
-  // Pobierz użytkownika jeśli token istnieje
   let user = null;
   if (token) {
     const { data, error } = await supabase.auth.getUser(token);
@@ -26,7 +27,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
 
-  // Ustaw context.locals
   context.locals.supabase = supabase;
   context.locals.user = user;
 

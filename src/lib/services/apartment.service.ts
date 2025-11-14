@@ -190,40 +190,39 @@ export class ApartmentService {
     userId: string,
     command: CreateApartmentCommand,
   ): Promise<Tables<'apartments'>> {
-    const { data: user, error: userError } = await this.supabase
-      .from('users')
-      .select('role')
-      .eq('id', userId)
-      .single();
+    const { data, error: insertError } = await (this.supabase.rpc as any)('create_apartment_rpc', {
+      p_name: command.name,
+      p_address: command.address,
+      p_owner_id: userId,
+      p_created_by: userId
+    });
 
-    if (userError || !user) {
-      throw new Error('Nie znaleziono użytkownika');
-    }
-
-    if (user.role !== 'owner') {
-      throw new ForbiddenError('Tylko właściciele mogą dodawać mieszkania');
-    }
-
-    const { data: apartment, error: insertError } = await this.supabase
-      .from('apartments')
-      .insert({
-        name: command.name,
-        address: command.address,
-        owner_id: userId,
-        created_by: userId
-      })
-      .select()
-      .single();
-
-    if (insertError || !apartment) {
+    if (insertError) {
       console.error('[ApartmentService.createApartment] Błąd tworzenia mieszkania:', {
         userId,
         error: insertError,
+        code: insertError.code,
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint
       });
-      throw new Error('Nie udało się utworzyć mieszkania');
+      
+      if (insertError.message?.includes('Only owners')) {
+        throw new ForbiddenError('Tylko właściciele mogą dodawać mieszkania');
+      }
+      
+      if (insertError.message?.includes('Not authenticated')) {
+        throw new ForbiddenError('Brak autoryzacji');
+      }
+      
+      throw new Error(`Nie udało się utworzyć mieszkania: ${insertError.message}`);
     }
 
-    return apartment;
+    if (!data) {
+      throw new Error('Nie udało się utworzyć mieszkania - brak danych');
+    }
+
+    return data as unknown as Tables<'apartments'>;
   }
 
   /**

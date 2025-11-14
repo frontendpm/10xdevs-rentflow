@@ -1,7 +1,7 @@
 import type { APIContext } from "astro";
 import { z } from "zod";
 import { ApartmentService } from "@/lib/services/apartment.service";
-import { GetApartmentsQuerySchema, CreateApartmentSchema } from "@/lib/validation/apartments.validation";
+import { apartmentFormSchema, GetApartmentsQuerySchema } from "@/lib/validation/apartments.validation";
 import type { ApartmentListDTO } from "@/types";
 import { ForbiddenError } from "@/lib/errors";
 
@@ -190,9 +190,9 @@ export async function POST(context: APIContext): Promise<Response> {
     const body = await context.request.json();
 
     // 3. Walidacja danych wejściowych
-    const validated = CreateApartmentSchema.parse(body);
+    const validated = apartmentFormSchema.parse(body);
 
-    // 4. Utworzenie mieszkania przez serwis
+    // 4. Utworzenie mieszkania przez serwis (RLS sprawdzi uprawnienia)
     const apartmentService = new ApartmentService(context.locals.supabase);
     const apartment = await apartmentService.createApartment(user.id, validated);
 

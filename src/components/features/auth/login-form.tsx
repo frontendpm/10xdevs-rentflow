@@ -104,6 +104,24 @@ export default function LoginForm() {
       const userData = await userResponse.json();
       console.log("User profile:", userData);
 
+      if (userData.role === "owner") {
+        const apartmentsResponse = await fetch("/api/apartments", {
+          headers: {
+            Authorization: `Bearer ${data.access_token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (apartmentsResponse.ok) {
+          const apartmentsData = await apartmentsResponse.json();
+          
+          if (apartmentsData.apartments && apartmentsData.apartments.length === 0) {
+            window.location.href = "/onboarding";
+            return;
+          }
+        }
+      }
+
       window.location.href = "/dashboard";
     } catch (error) {
       console.error("Login error:", error);
