@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@/db/supabase.client";
-import type { UserProfileDTO } from "@/types";
+import type { UserProfileDTO, UpdateUserProfileCommand } from "@/types";
 
 /**
  * Pobiera profil aktualnie zalogowanego użytkownika
@@ -41,4 +41,52 @@ export async function getCurrentUser(supabase: SupabaseClient, userId: string): 
   }
 
   return data as UserProfileDTO;
+}
+
+/**
+ * Aktualizuje profil aktualnie zalogowanego użytkownika (tylko pole full_name)
+ *
+ * @param supabase - Klient Supabase z context.locals
+ * @param userId - ID użytkownika (z context.locals.user.id)
+ * @param data - Dane do aktualizacji (full_name)
+ * @returns Zaktualizowany profil użytkownika
+ * @throws Error jeśli aktualizacja się nie powiedzie lub użytkownik nie został znaleziony
+ *
+ * @example
+ * ```ts
+ * const updatedProfile = await updateCurrentUserProfile(
+ *   context.locals.supabase,
+ *   context.locals.user.id,
+ *   { full_name: "Jan Nowak" }
+ * );
+ * ```
+ */
+export async function updateCurrentUserProfile(
+  supabase: SupabaseClient,
+  userId: string,
+  data: UpdateUserProfileCommand
+): Promise<UserProfileDTO> {
+  const { data: profile, error } = await supabase
+    .from("users")
+    .update({
+      full_name: data.full_name,
+    })
+    .eq("id", userId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("[UserService.updateCurrentUserProfile] Błąd bazy danych:", {
+      code: error.code,
+      message: error.message,
+      userId,
+    });
+    throw error;
+  }
+
+  if (!profile) {
+    throw new Error("User not found");
+  }
+
+  return profile as UserProfileDTO;
 }
