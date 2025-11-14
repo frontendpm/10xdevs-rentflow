@@ -45,4 +45,4 @@
 - **DELETE /api/apartments/:id/protocols/:type/photos/:photoId** → [delete-apartments-id-protocols-type-photos-photoId-implementation-plan.md](delete-apartments-id-protocols-type-photos-photoId-implementation-plan.md)
 
 ## Dashboard
-- **GET /api/dashboard** → [get-dashboard-implementation-plan.md](get-dashboard-implementation-plan.md)
+- **GET /api/dashboard** → [get-dashboard-implementation-plan.md](get-dashboard-implementation-plan.md) - done
