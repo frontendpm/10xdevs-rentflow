@@ -13,10 +13,10 @@
 - **GET /api/apartments/:id/summary** → [get-apartments-id-summary-implementation-plan.md](get-apartments-id-summary-implementation-plan.md) - done
 
 ## Invitation Management
-- **POST /api/apartments/:id/invitations** → [post-apartments-id-invitations-implementation-plan.md](post-apartments-id-invitations-implementation-plan.md)
-- **GET /api/apartments/:id/invitations** → [get-apartments-id-invitations-implementation-plan.md](get-apartments-id-invitations-implementation-plan.md)
-- **GET /api/invitations/:token** → [get-invitations-token-implementation-plan.md](get-invitations-token-implementation-plan.md)
-- **POST /api/invitations/:token/accept** → [post-invitations-token-accept-implementation-plan.md](post-invitations-token-accept-implementation-plan.md)
+- **POST /api/apartments/:id/invitations** → [post-apartments-id-invitations-implementation-plan.md](post-apartments-id-invitations-implementation-plan.md) - done
+- **GET /api/apartments/:id/invitations** → [get-apartments-id-invitations-implementation-plan.md](get-apartments-id-invitations-implementation-plan.md) - done
+- **GET /api/invitations/:token** → [get-invitations-token-implementation-plan.md](get-invitations-token-implementation-plan.md) - done
+- **POST /api/invitations/:token/accept** → [post-invitations-token-accept-implementation-plan.md](post-invitations-token-accept-implementation-plan.md) - done
 
 ## Lease Management
 - **GET /api/apartments/:id/lease** → [get-apartments-id-lease-implementation-plan.md](get-apartments-id-lease-implementation-plan.md)

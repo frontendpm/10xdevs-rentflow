@@ -126,6 +126,14 @@ export async function GET(context: APIContext): Promise<Response> {
       apartments,
     };
 
+    console.log('[GET /api/apartments] Sending response:', {
+      userId: user.id,
+      role,
+      apartmentsCount: apartments.length,
+      responseSize: JSON.stringify(responseBody).length,
+      timestamp: new Date().toISOString(),
+    });
+
     // 5. Happy path - zwrócenie listy mieszkań
     return new Response(JSON.stringify(responseBody), {
       status: 200,

@@ -79,9 +79,16 @@ export default function LoginForm() {
         return;
       }
 
+      // Zapisz token do localStorage (dla API requests)
       localStorage.setItem("rentflow_auth_token", data.access_token);
       if (data.refresh_token) {
         localStorage.setItem("rentflow_refresh_token", data.refresh_token);
+      }
+
+      // Zapisz token do cookies (dla SSR pages)
+      document.cookie = `rentflow_auth_token=${data.access_token}; path=/; max-age=3600; SameSite=Lax`;
+      if (data.refresh_token) {
+        document.cookie = `rentflow_refresh_token=${data.refresh_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
       }
 
       const userResponse = await fetch("/api/users/me", {

@@ -30,6 +30,12 @@ export class ApartmentService {
     userId: string,
     includeArchived: boolean,
   ): Promise<ApartmentListItemOwnerDTO[]> {
+    console.log("[ApartmentService.getApartmentsForOwner] Start:", {
+      userId,
+      includeArchived,
+      timestamp: new Date().toISOString(),
+    });
+
     // 1. Pobranie wszystkich mieszkań właściciela
     const { data: apartments, error: apartmentsError } = await this.supabase
       .from("apartments")
@@ -40,10 +46,23 @@ export class ApartmentService {
     if (apartmentsError) {
       console.error("[ApartmentService.getApartmentsForOwner] Błąd pobierania mieszkań:", {
         userId,
-        error: apartmentsError,
+        error: {
+          code: apartmentsError.code,
+          message: apartmentsError.message,
+          details: apartmentsError.details,
+          hint: apartmentsError.hint,
+        },
+        timestamp: new Date().toISOString(),
       });
       throw new Error(`Failed to fetch apartments: ${apartmentsError.message}`);
     }
+
+    console.log("[ApartmentService.getApartmentsForOwner] Pobrano mieszkania:", {
+      userId,
+      count: apartments?.length || 0,
+      apartmentIds: apartments?.map(a => a.id) || [],
+      timestamp: new Date().toISOString(),
+    });
 
     if (!apartments || apartments.length === 0) {
       return [];
@@ -52,6 +71,11 @@ export class ApartmentService {
     // 2. Dla każdego mieszkania pobierz informacje o najmie i lokatorze
     const apartmentItems: ApartmentListItemOwnerDTO[] = await Promise.all(
       apartments.map(async (apartment) => {
+        console.log(`[ApartmentService] Fetching lease for apartment:`, {
+          apartmentId: apartment.id,
+          apartmentName: apartment.name,
+        });
+
         // 2a. Budujemy query dla najmu
         let leaseQuery = this.supabase
           .from("leases")
@@ -77,7 +101,24 @@ export class ApartmentService {
           leaseQuery = leaseQuery.eq("status", "active");
         }
 
-        const { data: lease } = await leaseQuery.maybeSingle();
+        const { data: lease, error: leaseError } = await leaseQuery.maybeSingle();
+
+        if (leaseError) {
+          console.error(`[ApartmentService] Error fetching lease:`, {
+            apartmentId: apartment.id,
+            error: {
+              code: leaseError.code,
+              message: leaseError.message,
+              details: leaseError.details,
+            },
+          });
+        }
+
+        console.log(`[ApartmentService] Lease result:`, {
+          apartmentId: apartment.id,
+          hasLease: !!lease,
+          leaseStatus: lease?.status,
+        });
 
         // 2b. Budujemy obiekt mieszkania z najmem (jeśli istnieje)
         const apartmentItem: ApartmentListItemOwnerDTO = {
@@ -100,6 +141,13 @@ export class ApartmentService {
         return apartmentItem;
       })
     );
+
+    console.log('[ApartmentService.getApartmentsForOwner] Final result:', {
+      userId,
+      totalApartments: apartmentItems.length,
+      apartmentsWithLeases: apartmentItems.filter(a => a.lease).length,
+      timestamp: new Date().toISOString(),
+    });
 
     return apartmentItems;
   }

@@ -26,15 +26,21 @@ export function getAuthHeaders(): HeadersInit {
 }
 
 /**
- * Usuwa dane autoryzacji z localStorage i przekierowuje na login
+ * Usuwa dane autoryzacji z localStorage i cookies, przekierowuje na login
  */
 export function logout(redirectTo: string = '/login'): void {
   if (typeof window === 'undefined') {
     return;
   }
   
+  // Usuń z localStorage
   localStorage.removeItem('rentflow_auth_token');
   localStorage.removeItem('rentflow_refresh_token');
+  
+  // Usuń cookies (ustaw wygaśnięcie na przeszłość)
+  document.cookie = 'rentflow_auth_token=; path=/; max-age=0';
+  document.cookie = 'rentflow_refresh_token=; path=/; max-age=0';
+  
   window.location.href = redirectTo;
 }
 

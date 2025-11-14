@@ -6,8 +6,14 @@ const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  // Sprawdź token z Authorization header (dla API requests)
   const authHeader = context.request.headers.get("Authorization");
-  const token = authHeader?.replace("Bearer ", "");
+  let token = authHeader?.replace("Bearer ", "");
+
+  // Jeśli brak Authorization header, sprawdź cookies (dla SSR pages)
+  if (!token) {
+    token = context.cookies.get("rentflow_auth_token")?.value;
+  }
 
   const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     global: {
