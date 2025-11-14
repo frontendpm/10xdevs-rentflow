@@ -1,0 +1,12 @@
+---
+import AuthLayout from "../layouts/AuthLayout.astro";
+import LoginForm from "../components/features/auth/login-form";
+---
+
+<AuthLayout
+  title="Zaloguj się"
+  subtitle="Zarządzaj najmem w jednym miejscu."
+>
+  <LoginForm client:load />
+</AuthLayout>
+

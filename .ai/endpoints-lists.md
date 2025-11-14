@@ -5,7 +5,7 @@
 - **PATCH /api/users/me** → [patch-user-me-implementation-plan.md](patch-user-me-implementation-plan.md) - done
 
 ## Apartment Management
-- **GET /api/apartments** → [get-apartments-implementation-plan.md](get-apartments-implementation-plan.md)
+- **GET /api/apartments** → [get-apartments-implementation-plan.md](get-apartments-implementation-plan.md) - done
 - **POST /api/apartments** → [post-apartments-implementation-plan.md](post-apartments-implementation-plan.md)
 - **GET /api/apartments/:id** → [get-apartments-id-implementation-plan.md](get-apartments-id-implementation-plan.md)
 - **PATCH /api/apartments/:id** → [patch-apartments-id-implementation-plan.md](patch-apartments-id-implementation-plan.md)
