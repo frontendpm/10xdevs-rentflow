@@ -2,7 +2,7 @@
 
 ## User Management
 - **GET /api/users/me** → [get-user-me-implementation-plan.md](get-user-me-implementation-plan.md) - done
-- **PATCH /api/users/me** → [patch-user-me-implementation-plan.md](patch-user-me-implementation-plan.md)
+- **PATCH /api/users/me** → [patch-user-me-implementation-plan.md](patch-user-me-implementation-plan.md) - done
 
 ## Apartment Management
 - **GET /api/apartments** → [get-apartments-implementation-plan.md](get-apartments-implementation-plan.md)
