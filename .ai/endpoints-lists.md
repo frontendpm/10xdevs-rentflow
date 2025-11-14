@@ -24,13 +24,13 @@
 - **GET /api/apartments/:id/leases** → [get-apartments-id-leases-implementation-plan.md](get-apartments-id-leases-implementation-plan.md)
 
 ## Charge Management
-- **GET /api/apartments/:id/charges** → [get-apartments-id-charges-implementation-plan.md](get-apartments-id-charges-implementation-plan.md)
-- **POST /api/apartments/:id/charges** → [post-apartments-id-charges-implementation-plan.md](post-apartments-id-charges-implementation-plan.md)
-- **GET /api/charges/:id** → [get-charges-id-implementation-plan.md](get-charges-id-implementation-plan.md)
-- **PATCH /api/charges/:id** → [patch-charges-id-implementation-plan.md](patch-charges-id-implementation-plan.md)
-- **DELETE /api/charges/:id** → [delete-charges-id-implementation-plan.md](delete-charges-id-implementation-plan.md)
-- **POST /api/charges/:id/attachment** → [post-charges-id-attachment-implementation-plan.md](post-charges-id-attachment-implementation-plan.md)
-- **DELETE /api/charges/:id/attachment** → [delete-charges-id-attachment-implementation-plan.md](delete-charges-id-attachment-implementation-plan.md)
+- **GET /api/apartments/:id/charges** → [get-apartments-id-charges-implementation-plan.md](get-apartments-id-charges-implementation-plan.md) - done
+- **POST /api/apartments/:id/charges** → [post-apartments-id-charges-implementation-plan.md](post-apartments-id-charges-implementation-plan.md) - done
+- **GET /api/charges/:id** → [get-charges-id-implementation-plan.md](get-charges-id-implementation-plan.md) - done
+- **PATCH /api/charges/:id** → [patch-charges-id-implementation-plan.md](patch-charges-id-implementation-plan.md) - done
+- **DELETE /api/charges/:id** → [delete-charges-id-implementation-plan.md](delete-charges-id-implementation-plan.md) - done 
+- **POST /api/charges/:id/attachment** → [post-charges-id-attachment-implementation-plan.md](post-charges-id-attachment-implementation-plan.md) - done
+- **DELETE /api/charges/:id/attachment** → [delete-charges-id-attachment-implementation-plan.md](delete-charges-id-attachment-implementation-plan.md) - done
 
 ## Payment Management
 - **GET /api/charges/:id/payments** → [get-charges-id-payments-implementation-plan.md](get-charges-id-payments-implementation-plan.md)

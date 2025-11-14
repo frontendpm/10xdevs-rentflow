@@ -1,0 +1,101 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
+import ApartmentDetailsView from "@/components/features/apartments/apartment-details-view";
+import type { ApartmentDetailsDTO } from "@/types";
+
+export const prerender = false;
+
+// Guard clause - weryfikacja autentykacji
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect(`/login?redirect=/apartments/${Astro.params.id}`);
+}
+
+const supabase = Astro.locals.supabase;
+const apartmentId = Astro.params.id;
+
+// Guard clause - walidacja UUID
+if (!apartmentId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(apartmentId)) {
+  return Astro.redirect("/404");
+}
+
+// Pobranie szczegółów mieszkania
+let apartmentDetails: ApartmentDetailsDTO | null = null;
+let errorStatus: number | null = null;
+
+try {
+  const response = await fetch(`${Astro.url.origin}/api/apartments/${apartmentId}`, {
+    headers: {
+      Authorization: `Bearer ${Astro.cookies.get("rentflow_auth_token")?.value}`,
+    },
+  });
+
+  if (response.ok) {
+    apartmentDetails = await response.json();
+  } else {
+    errorStatus = response.status;
+  }
+} catch (error) {
+  console.error("[/apartments/[id]] Błąd pobierania danych mieszkania:", {
+    apartmentId,
+    userId: user.id,
+    error: error instanceof Error ? error.message : "Unknown error",
+  });
+  errorStatus = 500;
+}
+
+// Guard clause - obsługa błędów
+if (errorStatus === 404 || !apartmentDetails) {
+  return Astro.redirect("/404");
+}
+
+if (errorStatus === 403) {
+  return Astro.redirect("/403");
+}
+
+if (errorStatus) {
+  return Astro.redirect("/dashboard");
+}
+
+// Określenie roli użytkownika
+let role: 'owner' | 'tenant';
+if (apartmentDetails.owner_id === user.id) {
+  role = 'owner';
+} else if (apartmentDetails.lease && apartmentDetails.lease.tenant.id === user.id) {
+  role = 'tenant';
+} else {
+  // Użytkownik nie ma dostępu do tego mieszkania
+  return Astro.redirect("/403");
+}
+
+// Konfiguracja breadcrumbs
+const breadcrumbItems = [
+  { label: "Dashboard", href: "/dashboard" },
+  { label: apartmentDetails.name || apartmentDetails.address },
+];
+---
+
+<DashboardLayout title={apartmentDetails.name || apartmentDetails.address}>
+  <Breadcrumbs items={breadcrumbItems} client:load />
+
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
+        {apartmentDetails.name}
+      </h1>
+      {apartmentDetails.address && (
+        <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+          {apartmentDetails.address}
+        </p>
+      )}
+    </div>
+
+    <ApartmentDetailsView
+      client:load
+      apartmentId={apartmentId}
+      initialApartment={apartmentDetails}
+      role={role}
+    />
+  </div>
+</DashboardLayout>
