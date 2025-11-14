@@ -68,10 +68,20 @@ export class InvitationService {
       .single();
 
     if (insertError || !invitation) {
+      console.error('[InvitationService.createInvitation] Insert error:', {
+        insertError,
+        timestamp: new Date().toISOString(),
+      });
       throw new Error(`Failed to create invitation: ${insertError?.message}`);
     }
 
-    const invitationUrl = `${import.meta.env.PUBLIC_APP_URL}/register/tenant?token=${token}`;
+    const appUrl = import.meta.env.PUBLIC_APP_URL;
+    if (!appUrl) {
+      console.error('[InvitationService.createInvitation] PUBLIC_APP_URL not configured');
+      throw new Error('PUBLIC_APP_URL is not configured. Please set it in environment variables.');
+    }
+
+    const invitationUrl = `${appUrl}/register/tenant?token=${token}`;
 
     return {
       id: invitation.id,

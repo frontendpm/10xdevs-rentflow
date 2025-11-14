@@ -6,6 +6,7 @@ interface UseApartmentChargesState {
   chargesByMonth: Record<string, ChargeListItemDTO[]> | null;
   isLoading: boolean;
   error: string | null;
+  noActiveLease: boolean;
 }
 
 interface UseApartmentChargesReturn extends UseApartmentChargesState {
@@ -17,6 +18,7 @@ export function useApartmentCharges(apartmentId: string): UseApartmentChargesRet
     chargesByMonth: null,
     isLoading: true,
     error: null,
+    noActiveLease: false,
   });
 
   const fetchCharges = useCallback(async () => {
@@ -24,6 +26,7 @@ export function useApartmentCharges(apartmentId: string): UseApartmentChargesRet
       ...prev,
       isLoading: true,
       error: null,
+      noActiveLease: false,
     }));
 
     try {
@@ -40,6 +43,17 @@ export function useApartmentCharges(apartmentId: string): UseApartmentChargesRet
         } else if (response.status === 403) {
           throw new Error("Nie masz uprawnień do przeglądania opłat");
         } else if (response.status === 404) {
+          // Rozpoznaj błąd braku aktywnego najmu
+          if (errorData.message === "Brak aktywnego najmu dla tego mieszkania") {
+            // To normalny stan - nie błąd krytyczny
+            setState({
+              chargesByMonth: null,
+              isLoading: false,
+              error: null,
+              noActiveLease: true,
+            });
+            return; // Nie rzucaj błędu
+          }
           throw new Error(errorData.message || "Mieszkanie nie zostało znalezione");
         } else if (response.status === 500) {
           throw new Error("Wystąpił błąd serwera. Spróbuj ponownie później");
@@ -54,6 +68,7 @@ export function useApartmentCharges(apartmentId: string): UseApartmentChargesRet
         chargesByMonth: data.charges_by_month,
         isLoading: false,
         error: null,
+        noActiveLease: false,
       });
     } catch (error) {
       const message =
@@ -63,6 +78,7 @@ export function useApartmentCharges(apartmentId: string): UseApartmentChargesRet
         chargesByMonth: null,
         isLoading: false,
         error: message,
+        noActiveLease: false,
       });
 
       // Jeśli błąd 401, przekieruj na login
@@ -83,6 +99,7 @@ export function useApartmentCharges(apartmentId: string): UseApartmentChargesRet
     chargesByMonth: state.chargesByMonth,
     isLoading: state.isLoading,
     error: state.error,
+    noActiveLease: state.noActiveLease,
     refetch: fetchCharges,
   };
 }

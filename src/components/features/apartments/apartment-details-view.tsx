@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { ApartmentDetailsDTO } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ApartmentChargesTab from "./apartment-charges-tab";
+import ApartmentSettingsTab from "./apartment-settings-tab";
 
 type ApartmentTabId = 'charges' | 'protocol-move-in' | 'protocol-move-out' | 'settings';
 
@@ -117,11 +118,7 @@ export default function ApartmentDetailsView({
 
         {role === 'owner' && (
           <TabsContent value="settings" className="mt-6">
-            <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-8 text-center">
-              <p className="text-neutral-600 dark:text-neutral-400">
-                Ustawienia - w trakcie implementacji
-              </p>
-            </div>
+            <ApartmentSettingsTab apartment={initialApartment} />
           </TabsContent>
         )}
       </Tabs>
