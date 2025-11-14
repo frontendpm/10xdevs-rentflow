@@ -1,0 +1,74 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title ? `${title} | Rentflow` : "Rentflow"}</title>
+  </head>
+  <body class="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div class="flex min-h-screen flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div class="w-full max-w-md space-y-8">
+        <div class="text-center">
+          <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
+            Rentflow
+          </h1>
+          {title && (
+            <h2 class="mt-6 text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
+              {title}
+            </h2>
+          )}
+          {subtitle && (
+            <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+              {subtitle}
+            </p>
+          )}
+        </div>
+
+        <div class="rounded-lg border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <slot />
+        </div>
+
+        <footer class="text-center text-sm text-neutral-600 dark:text-neutral-400">
+          <div class="space-x-4">
+            <a
+              href="/regulamin"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-neutral-900 dark:hover:text-neutral-50 transition-colors underline"
+            >
+              Regulamin
+            </a>
+            <a
+              href="/polityka-prywatnosci"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-neutral-900 dark:hover:text-neutral-50 transition-colors underline"
+            >
+              Polityka Prywatności
+            </a>
+            <a
+              href="mailto:pomoc@rentflow.pl"
+              class="hover:text-neutral-900 dark:hover:text-neutral-50 transition-colors underline"
+            >
+              pomoc@rentflow.pl
+            </a>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+
