@@ -1,46 +1,90 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import { getOwnerDashboard, getTenantDashboard } from "@/lib/services/dashboardService";
+import type { DashboardDTO } from "@/types";
+import { isDashboardOwnerDTO } from "@/types";
+import { OwnerDashboardIsland } from "@/components/features/dashboard/owner-dashboard";
 
 export const prerender = false;
----
 
-<Layout title="Dashboard">
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold">Dashboard</h1>
-    <p class="mt-4 text-neutral-600 dark:text-neutral-400">
-      Witaj w Rentflow! Dashboard jest w trakcie budowy.
-    </p>
-  </div>
-</Layout>
+// Guard clause - weryfikacja autentykacji
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect("/login?redirect=/dashboard");
+}
 
-<script>
-  async function checkAuth() {
-    const token = localStorage.getItem("rentflow_auth_token");
+const supabase = Astro.locals.supabase;
 
-    if (!token) {
-      window.location.href = "/login?redirect=/dashboard";
-      return;
-    }
+// Pobranie roli użytkownika
+let dashboardData: DashboardDTO | null = null;
+let errorMessage: string | null = null;
 
-    try {
-      const response = await fetch("/api/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+try {
+  const { data: userData, error: userError } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  // Guard clause - sprawdzenie czy użytkownik istnieje w bazie
+  if (userError || !userData) {
+    console.error("[Dashboard] Użytkownik nie znaleziony:", {
+      userId: user.id,
+      error: userError,
+    });
+    errorMessage = "Wystąpił błąd podczas ładowania profilu użytkownika.";
+  } else {
+    const { role } = userData;
+
+    // Pobranie danych dashboardu w zależności od roli
+    if (role === "owner") {
+      dashboardData = await getOwnerDashboard(supabase, user.id);
+    } else if (role === "tenant") {
+      dashboardData = await getTenantDashboard(supabase, user.id);
+    } else {
+      console.error("[Dashboard] Nieprawidłowa rola użytkownika:", {
+        userId: user.id,
+        role,
       });
-
-      if (!response.ok) {
-        localStorage.removeItem("rentflow_auth_token");
-        localStorage.removeItem("rentflow_refresh_token");
-        window.location.href = "/login?redirect=/dashboard";
-      }
-    } catch (error) {
-      console.error("Auth check error:", error);
-      window.location.href = "/login?redirect=/dashboard";
+      errorMessage = "Nieprawidłowa rola użytkownika.";
     }
   }
+} catch (error) {
+  console.error("[Dashboard] Nieoczekiwany błąd podczas ładowania dashboardu:", error);
+  errorMessage = "Nie udało się załadować dashboardu. Spróbuj odświeżyć stronę.";
+}
+---
 
-  checkAuth();
-</script>
-
+<DashboardLayout title="Dashboard">
+  {
+    errorMessage ? (
+      <div class="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-900 dark:bg-red-950">
+        <p class="text-lg font-semibold text-red-900 dark:text-red-100">
+          Wystąpił błąd
+        </p>
+        <p class="mt-2 text-red-700 dark:text-red-300">{errorMessage}</p>
+        <a
+          href="mailto:pomoc@rentflow.pl"
+          class="mt-4 inline-block text-sm text-red-600 underline hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+        >
+          Skontaktuj się z pomocą: pomoc@rentflow.pl
+        </a>
+      </div>
+    ) : dashboardData && isDashboardOwnerDTO(dashboardData) ? (
+      <OwnerDashboardIsland dashboard={dashboardData} client:load />
+    ) : dashboardData ? (
+      <div id="tenant-dashboard" data-dashboard={JSON.stringify(dashboardData)}>
+        {/* Dashboard lokatora - do implementacji w przyszłości */}
+        <p class="text-neutral-600 dark:text-neutral-400">
+          Dashboard lokatora - do implementacji
+        </p>
+      </div>
+    ) : (
+      <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-6 text-center dark:border-neutral-800 dark:bg-neutral-900">
+        <p class="text-neutral-900 dark:text-neutral-100">
+          Nie znaleziono danych dashboardu.
+        </p>
+      </div>
+    )
+  }
+</DashboardLayout>
