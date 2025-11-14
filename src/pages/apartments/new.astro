@@ -1,0 +1,43 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import NewApartmentView from "@/components/features/apartments/new-apartment-view";
+
+export const prerender = false;
+
+// Guard clause - weryfikacja autentykacji
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect("/login?redirect=/apartments/new");
+}
+
+const supabase = Astro.locals.supabase;
+
+// Sprawdzenie roli użytkownika - tylko właściciele mogą dodawać mieszkania
+const { data: userData, error: userError } = await supabase
+  .from("users")
+  .select("role")
+  .eq("id", user.id)
+  .single();
+
+// Guard clause - sprawdzenie czy użytkownik istnieje w bazie
+if (userError || !userData) {
+  console.error("[/apartments/new] Użytkownik nie znaleziony:", {
+    userId: user.id,
+    error: userError,
+  });
+  return Astro.redirect("/dashboard");
+}
+
+// Guard clause - tylko właściciele mogą dodawać mieszkania
+if (userData.role !== "owner") {
+  console.warn("[/apartments/new] Próba dostępu przez użytkownika niebędącego właścicielem:", {
+    userId: user.id,
+    role: userData.role,
+  });
+  return Astro.redirect("/dashboard");
+}
+---
+
+<DashboardLayout title="Dodaj mieszkanie">
+  <NewApartmentView client:load />
+</DashboardLayout>
