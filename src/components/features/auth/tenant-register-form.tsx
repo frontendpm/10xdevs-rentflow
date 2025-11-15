@@ -110,9 +110,44 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
         return;
       }
 
-      // Krok 2: Akceptacja zaproszenia (powiązanie lokatora z mieszkaniem)
+      // Krok 2: Zaloguj użytkownika po signup (aby uzyskać access_token)
+      // Signup nie ustawia automatycznie sesji, więc musimy zalogować użytkownika
+      console.log("Logging in user after signup...");
+
+      const loginResponse = await fetch(
+        `${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          }),
+        }
+      );
+
+      const loginData = await loginResponse.json();
+      console.log("Login after signup response:", loginData);
+
+      if (loginData.error || !loginData.access_token) {
+        console.error("Failed to login after signup:", loginData);
+        setGlobalError({
+          message: "Konto zostało utworzone, ale nie udało się zalogować. Spróbuj zalogować się ręcznie.",
+        });
+        return;
+      }
+
+      // Krok 3: Akceptacja zaproszenia (powiązanie lokatora z mieszkaniem)
+      // Użyj tokenu z loginu do autoryzacji
       const acceptResponse = await fetch(`/api/invitations/${token}/accept`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${loginData.access_token}`,
+        },
       });
 
       const acceptData = await acceptResponse.json();
@@ -165,8 +200,22 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
         return;
       }
 
-      // Sukces - redirect do dashboardu
+      // Sukces - zapisz tokeny do localStorage i cookies
       console.log("Registration and invitation acceptance successful");
+
+      // Zapisz token do localStorage (dla API requests)
+      localStorage.setItem("rentflow_auth_token", loginData.access_token);
+      if (loginData.refresh_token) {
+        localStorage.setItem("rentflow_refresh_token", loginData.refresh_token);
+      }
+
+      // Zapisz token do cookies (dla SSR pages)
+      document.cookie = `rentflow_auth_token=${loginData.access_token}; path=/; max-age=3600; SameSite=Lax`;
+      if (loginData.refresh_token) {
+        document.cookie = `rentflow_refresh_token=${loginData.refresh_token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+      }
+
+      // Redirect do dashboardu
       window.location.href = "/dashboard";
     } catch (error) {
       console.error("Registration error:", error);

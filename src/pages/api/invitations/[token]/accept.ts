@@ -2,6 +2,7 @@ import type { APIContext } from 'astro';
 import { z } from 'zod';
 import { AcceptInvitationParamsSchema } from '@/lib/validation/invitations.validation';
 import { InvitationService } from '@/lib/services/invitation.service';
+import { createServiceRoleClient } from '@/db/supabase.client';
 
 export const prerender = false;
 
@@ -20,7 +21,8 @@ export async function POST(context: APIContext) {
 
     const params = AcceptInvitationParamsSchema.parse(context.params);
 
-    const supabase = context.locals.supabase;
+    // Use service role client to bypass RLS (tenant cannot read invitation_links)
+    const supabase = createServiceRoleClient();
     const invitationService = new InvitationService(supabase);
     const result = await invitationService.acceptInvitation(
       params.token,
