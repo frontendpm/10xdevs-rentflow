@@ -2,8 +2,9 @@
 import DashboardLayout from "@/layouts/DashboardLayout.astro";
 import { getOwnerDashboard, getTenantDashboard } from "@/lib/services/dashboardService";
 import type { DashboardDTO } from "@/types";
-import { isDashboardOwnerDTO } from "@/types";
+import { isDashboardOwnerDTO, isDashboardTenantDTO } from "@/types";
 import { OwnerDashboardIsland } from "@/components/features/dashboard/owner-dashboard";
+import { TenantDashboardIsland } from "@/components/features/dashboard/tenant-dashboard";
 
 export const prerender = false;
 
@@ -72,13 +73,8 @@ try {
       </div>
     ) : dashboardData && isDashboardOwnerDTO(dashboardData) ? (
       <OwnerDashboardIsland dashboard={dashboardData} client:load />
-    ) : dashboardData ? (
-      <div id="tenant-dashboard" data-dashboard={JSON.stringify(dashboardData)}>
-        {/* Dashboard lokatora - do implementacji w przyszłości */}
-        <p class="text-neutral-600 dark:text-neutral-400">
-          Dashboard lokatora - do implementacji
-        </p>
-      </div>
+    ) : dashboardData && isDashboardTenantDTO(dashboardData) ? (
+      <TenantDashboardIsland dashboard={dashboardData} client:load />
     ) : (
       <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-6 text-center dark:border-neutral-800 dark:bg-neutral-900">
         <p class="text-neutral-900 dark:text-neutral-100">
