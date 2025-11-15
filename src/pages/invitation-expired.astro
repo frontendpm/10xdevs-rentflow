@@ -1,0 +1,72 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+---
+
+<AuthLayout
+  title="Link wygasł"
+  subtitle="Ten link zapraszający wygasł lub został już wykorzystany"
+>
+  <div class="space-y-6 text-center">
+    <div class="rounded-lg border border-orange-200 bg-orange-50 p-6 dark:border-orange-900 dark:bg-orange-950/30">
+      <svg
+        class="mx-auto h-12 w-12 text-orange-600 dark:text-orange-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        ></path>
+      </svg>
+      <h3 class="mt-4 text-lg font-semibold text-orange-900 dark:text-orange-100">
+        Link zapraszający jest nieważny
+      </h3>
+      <p class="mt-2 text-sm text-orange-800 dark:text-orange-200">
+        Ten link zapraszający wygasł lub został już wykorzystany.
+      </p>
+    </div>
+
+    <div class="space-y-3 text-sm text-neutral-600 dark:text-neutral-400">
+      <p>Aby uzyskać nowy link zapraszający:</p>
+      <ol class="space-y-2 text-left">
+        <li class="flex items-start">
+          <span class="mr-2 font-semibold">1.</span>
+          <span>Skontaktuj się z właścicielem mieszkania</span>
+        </li>
+        <li class="flex items-start">
+          <span class="mr-2 font-semibold">2.</span>
+          <span>Poproś o wygenerowanie nowego linku zapraszającego</span>
+        </li>
+        <li class="flex items-start">
+          <span class="mr-2 font-semibold">3.</span>
+          <span>Użyj nowego linku do założenia konta</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="pt-4">
+      <a
+        href="/login"
+        class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+      >
+        Przejdź do logowania
+      </a>
+    </div>
+
+    <div class="pt-4 text-sm text-neutral-600 dark:text-neutral-400">
+      <p>
+        Potrzebujesz pomocy?{" "}
+        <a
+          href="mailto:pomoc@rentflow.pl"
+          class="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+        >
+          Skontaktuj się z nami
+        </a>
+      </p>
+    </div>
+  </div>
+</AuthLayout>

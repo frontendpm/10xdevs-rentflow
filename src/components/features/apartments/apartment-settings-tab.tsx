@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import InvitationLinkGenerator from "@/components/features/onboarding/invitation-link-generator";
-import type { OnboardingApartmentVM, InvitationLinkVM, ApartmentDetailsDTO } from "@/types";
+import type { OnboardingApartmentVM, InvitationLinkVM, ApartmentDetailsDTO, InvitationListDTO } from "@/types";
 import { toast } from "sonner";
 import { getAuthHeaders } from "@/lib/utils/auth";
 
@@ -12,6 +12,44 @@ interface ApartmentSettingsTabProps {
 
 export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTabProps) {
   const [invitation, setInvitation] = useState<InvitationLinkVM | undefined>(undefined);
+  const [isLoadingInvitation, setIsLoadingInvitation] = useState(true);
+
+  // Load existing pending invitation on mount
+  useEffect(() => {
+    const loadPendingInvitation = async () => {
+      try {
+        const response = await fetch(`/api/apartments/${apartment.id}/invitations`, {
+          headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+          setIsLoadingInvitation(false);
+          return;
+        }
+
+        const data: InvitationListDTO = await response.json();
+
+        // Find the most recent pending invitation
+        const pendingInvitation = data.invitations.find((inv) => inv.status === "pending");
+
+        if (pendingInvitation) {
+          const appUrl = import.meta.env.PUBLIC_APP_URL || window.location.origin;
+          const invitationUrl = `${appUrl}/register/tenant?token=${pendingInvitation.token}`;
+
+          setInvitation({
+            url: invitationUrl,
+            status: "ready",
+          });
+        }
+      } catch (error) {
+        console.error("Error loading pending invitation:", error);
+      } finally {
+        setIsLoadingInvitation(false);
+      }
+    };
+
+    loadPendingInvitation();
+  }, [apartment.id]);
 
   const handleGenerateInvitation = async () => {
     setInvitation({ url: "", status: "loading" });
@@ -107,6 +145,13 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
               <p className="text-xs text-neutral-600 dark:text-neutral-400">
                 Funkcja zakończenia najmu będzie dostępna wkrótce
               </p>
+            </div>
+          ) : isLoadingInvitation ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-primary" />
+              <span className="ml-2 text-sm text-neutral-600 dark:text-neutral-400">
+                Ładowanie...
+              </span>
             </div>
           ) : (
             <InvitationLinkGenerator

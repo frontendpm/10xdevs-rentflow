@@ -2,6 +2,7 @@ import type { APIContext } from 'astro';
 import { z } from 'zod';
 import { ValidateInvitationParamsSchema } from '@/lib/validation/invitations.validation';
 import { InvitationService } from '@/lib/services/invitation.service';
+import { createServiceRoleClient } from '@/db/supabase.client';
 
 export const prerender = false;
 
@@ -9,7 +10,8 @@ export async function GET(context: APIContext) {
   try {
     const params = ValidateInvitationParamsSchema.parse(context.params);
 
-    const supabase = context.locals.supabase;
+    // Use service role client for public endpoint to bypass RLS
+    const supabase = createServiceRoleClient();
     const invitationService = new InvitationService(supabase);
     const validation = await invitationService.validateInvitationToken(
       params.token

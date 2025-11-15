@@ -34,37 +34,36 @@ export default function ApartmentDetailsView({
   initialApartment,
   role,
 }: ApartmentDetailsViewProps) {
-  // Inicjalizacja aktywnej zakładki na podstawie hash z URL
-  const getInitialTab = (): ApartmentTabId => {
-    if (typeof window === 'undefined') return 'charges';
+  // Inicjalizacja z domyślną zakładką 'charges' - spójna między SSR i klientem
+  const [activeTab, setActiveTab] = useState<ApartmentTabId>('charges');
+  const [isHydrated, setIsHydrated] = useState(false);
 
+  // Odczytaj hash z URL po hydration (tylko raz)
+  useEffect(() => {
     const hash = window.location.hash;
     const tab = hashToTab[hash];
 
-    // Jeśli hash wskazuje na ustawienia, ale użytkownik to tenant, ignoruj
-    if (tab === 'settings' && role === 'tenant') {
-      return 'charges';
+    if (tab && (tab !== 'settings' || role === 'owner')) {
+      setActiveTab(tab);
     }
 
-    return tab || 'charges';
-  };
+    setIsHydrated(true);
+  }, [role]);
 
-  const [activeTab, setActiveTab] = useState<ApartmentTabId>(getInitialTab);
-
-  // Synchronizacja hash w URL przy zmianie zakładki
+  // Synchronizacja hash w URL przy zmianie zakładki (tylko po hydration)
   useEffect(() => {
+    if (!isHydrated) return;
+
     const hash = tabToHash[activeTab];
 
-    if (typeof window !== 'undefined') {
-      // Aktualizacja hash bez przeładowania strony
-      if (hash) {
-        window.history.replaceState(null, '', hash);
-      } else {
-        // Usunięcie hash dla zakładki domyślnej
-        window.history.replaceState(null, '', window.location.pathname);
-      }
+    // Aktualizacja hash bez przeładowania strony
+    if (hash) {
+      window.history.replaceState(null, '', hash);
+    } else {
+      // Usunięcie hash dla zakładki domyślnej
+      window.history.replaceState(null, '', window.location.pathname);
     }
-  }, [activeTab]);
+  }, [activeTab, isHydrated]);
 
   // Nasłuchiwanie zmian hash w URL (np. przycisk wstecz/do przodu)
   useEffect(() => {

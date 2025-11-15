@@ -1,0 +1,65 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import TenantRegisterForm from "@/components/features/auth/tenant-register-form";
+import type { ValidateInvitationDTO } from "@/types";
+
+export const prerender = false;
+
+// Pobierz token z query params
+const token = Astro.url.searchParams.get("token");
+
+// Jeśli brak tokenu - redirect na stronę logowania
+if (!token) {
+  return Astro.redirect("/login");
+}
+
+// Walidacja tokenu przez API
+let invitationData: ValidateInvitationDTO | null = null;
+let validationError = false;
+
+try {
+  const apiUrl = new URL(
+    `/api/invitations/${token}`,
+    Astro.url.origin
+  );
+
+  const response = await fetch(apiUrl);
+
+  if (!response.ok) {
+    // Token nieważny lub inny błąd - redirect na stronę błędu zaproszenia
+    if (response.status === 400) {
+      return Astro.redirect("/invitation-expired");
+    }
+
+    // Inny błąd serwera
+    validationError = true;
+  } else {
+    invitationData = await response.json();
+  }
+} catch (error) {
+  console.error("Error validating invitation token:", error);
+  validationError = true;
+}
+
+// Jeśli wystąpił błąd walidacji - redirect
+if (validationError || !invitationData) {
+  return Astro.redirect("/invitation-expired");
+}
+---
+
+<AuthLayout
+  title="Rejestracja lokatora"
+  subtitle="Utwórz konto, aby uzyskać dostęp do mieszkania"
+>
+  <div class="space-y-4">
+    <!-- Info o zaproszeniu -->
+    <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/30">
+      <p class="text-sm text-blue-900 dark:text-blue-100">
+        Zostałeś zaproszony do mieszkania <strong>{invitationData.apartment.name}</strong> ({invitationData.apartment.address}). Właściciel: <strong>{invitationData.owner.full_name}</strong>.
+      </p>
+    </div>
+
+    <!-- Formularz rejestracji - React island -->
+    <TenantRegisterForm token={token} client:load />
+  </div>
+</AuthLayout>
