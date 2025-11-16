@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import InvitationLinkGenerator from "@/components/features/onboarding/invitation-link-generator";
-import type { OnboardingApartmentVM, InvitationLinkVM, ApartmentDetailsDTO, InvitationListDTO } from "@/types";
+import type { InvitationLinkVM, ApartmentDetailsDTO, InvitationListDTO } from "@/types";
 import { toast } from "sonner";
 import { getAuthHeaders } from "@/lib/utils/auth";
+import { hasActiveLease as checkActiveLease } from "@/lib/utils/lease";
 
 interface ApartmentSettingsTabProps {
   apartment: ApartmentDetailsDTO;
@@ -100,7 +101,7 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
     }
   };
 
-  const hasActiveLease = apartment.lease && apartment.lease.status === "active";
+  const hasActiveLease = checkActiveLease(apartment);
 
   return (
     <div className="space-y-6">
