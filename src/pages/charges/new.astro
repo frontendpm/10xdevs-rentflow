@@ -1,0 +1,115 @@
+---
+import DashboardLayout from "@/layouts/DashboardLayout.astro";
+import ChargeForm from "@/components/features/charges/charge-form";
+
+export const prerender = false;
+
+// Guard clause - weryfikacja autentykacji
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect("/login?redirect=/charges/new");
+}
+
+const supabase = Astro.locals.supabase;
+
+// Odczyt apartmentId z query params
+const apartmentId = Astro.url.searchParams.get("apartmentId");
+
+// Guard clause - sprawdzenie obecności apartmentId
+if (!apartmentId) {
+  console.error("[/charges/new] Brak parametru apartmentId");
+  return Astro.redirect("/dashboard");
+}
+
+// Sprawdzenie roli użytkownika - tylko właściciele mogą dodawać opłaty
+const { data: userData, error: userError } = await supabase
+  .from("users")
+  .select("role")
+  .eq("id", user.id)
+  .single();
+
+// Guard clause - sprawdzenie czy użytkownik istnieje w bazie
+if (userError || !userData) {
+  console.error("[/charges/new] Użytkownik nie znaleziony:", {
+    userId: user.id,
+    error: userError,
+  });
+  return Astro.redirect("/dashboard");
+}
+
+// Guard clause - tylko właściciele mogą dodawać opłaty
+if (userData.role !== "owner") {
+  console.warn("[/charges/new] Próba dostępu przez użytkownika niebędącego właścicielem:", {
+    userId: user.id,
+    role: userData.role,
+  });
+  return Astro.redirect("/dashboard");
+}
+
+// Pobierz dane mieszkania dla breadcrumbów i walidacji dostępu
+const { data: apartmentData, error: apartmentError } = await supabase
+  .from("apartments")
+  .select("id, name, owner_id")
+  .eq("id", apartmentId)
+  .single();
+
+// Guard clause - mieszkanie nie istnieje
+if (apartmentError || !apartmentData) {
+  console.error("[/charges/new] Mieszkanie nie znalezione:", {
+    apartmentId,
+    error: apartmentError,
+  });
+  return Astro.redirect("/dashboard");
+}
+
+// Guard clause - użytkownik nie jest właścicielem tego mieszkania
+if (apartmentData.owner_id !== user.id) {
+  console.warn("[/charges/new] Użytkownik nie jest właścicielem mieszkania:", {
+    userId: user.id,
+    apartmentId,
+    ownerId: apartmentData.owner_id,
+  });
+  return Astro.redirect("/dashboard");
+}
+
+const apartmentName = apartmentData.name;
+---
+
+<DashboardLayout title="Dodaj opłatę">
+  <div class="space-y-6">
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center text-sm text-neutral-500 dark:text-neutral-400" aria-label="Breadcrumb">
+      <a href="/dashboard" class="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
+        Dashboard
+      </a>
+      <span class="mx-2">/</span>
+      <a
+        href={`/apartments/${apartmentId}`}
+        class="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+      >
+        {apartmentName}
+      </a>
+      <span class="mx-2">/</span>
+      <span class="text-neutral-900 dark:text-neutral-100 font-medium">Dodaj opłatę</span>
+    </nav>
+
+    <!-- Header -->
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
+        Dodaj opłatę
+      </h1>
+      <p class="mt-1 text-neutral-600 dark:text-neutral-400">
+        Utwórz nową opłatę dla lokatora tego mieszkania
+      </p>
+    </div>
+
+    <!-- Formularz -->
+    <div class="max-w-2xl">
+      <ChargeForm
+        client:load
+        apartmentId={apartmentId}
+        apartmentName={apartmentName}
+      />
+    </div>
+  </div>
+</DashboardLayout>
