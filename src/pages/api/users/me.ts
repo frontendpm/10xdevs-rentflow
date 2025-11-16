@@ -113,7 +113,7 @@ export async function PATCH(context: APIContext): Promise<Response> {
     let body: unknown;
     try {
       body = await context.request.json();
-    } catch (error) {
+    } catch (_error) {
       return new Response(
         JSON.stringify({
           error: "Bad Request",

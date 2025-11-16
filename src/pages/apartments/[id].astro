@@ -12,7 +12,7 @@ if (!user) {
   return Astro.redirect(`/login?redirect=/apartments/${Astro.params.id}`);
 }
 
-const supabase = Astro.locals.supabase;
+const _supabase = Astro.locals.supabase;
 const apartmentId = Astro.params.id;
 
 // Guard clause - walidacja UUID

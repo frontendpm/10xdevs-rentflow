@@ -68,7 +68,7 @@ const chargeFormSchema = z.object({
 // COMPONENT
 // =============================================================================
 
-export default function ChargeForm({ apartmentId, apartmentName }: ChargeFormProps) {
+export default function ChargeForm({ apartmentId, apartmentName: _apartmentName }: ChargeFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [noActiveLeaseError, setNoActiveLeaseError] = useState<string | null>(null);
 

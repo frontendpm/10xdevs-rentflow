@@ -145,6 +145,7 @@ export class InvitationService {
       throw invitationsError;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const invitationList: InvitationListItemDTO[] = (invitations || []).map((inv: any) => {
       const item: InvitationListItemDTO = {
         id: inv.id,

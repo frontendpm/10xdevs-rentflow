@@ -18,8 +18,16 @@ const gitignorePath = path.resolve(__dirname, ".gitignore");
 const baseConfig = tseslint.config({
   extends: [eslint.configs.recommended, tseslint.configs.strict, tseslint.configs.stylistic],
   rules: {
-    "no-console": "warn",
+    "no-console": ["warn", { allow: ["warn", "error", "info"] }],
     "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      },
+    ],
   },
 });
 
@@ -62,5 +70,20 @@ export default tseslint.config(
   jsxA11yConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
-  eslintPluginPrettier
+  eslintPluginPrettier,
+  // Disable prettier rule for Astro files to avoid parsing conflicts
+  {
+    files: ["**/*.astro", "**/*.astro/**"],
+    rules: {
+      "prettier/prettier": "off",
+    },
+  },
+  // Disable react-hooks rules for test files (Playwright uses 'use' as a function name)
+  {
+    files: ["tests/**/*.ts", "tests/**/*.tsx"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
+      "react-hooks/exhaustive-deps": "off",
+    },
+  }
 );

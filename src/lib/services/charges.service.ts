@@ -6,7 +6,6 @@ import type {
   ChargeDetailsDTO,
   UpdateChargeCommand,
   UploadChargeAttachmentResponseDTO,
-  PaymentDTO,
 } from "@/types";
 
 /**
@@ -143,7 +142,7 @@ export class ChargesService {
         }
 
         // Usunięcie pól wewnętrznych
-        const { created_by, lease_id: _lease_id, ...chargeDto } = charge;
+        const { created_by: _created_by, lease_id: _lease_id, ...chargeDto } = charge;
 
         return {
           ...chargeDto,
@@ -280,7 +279,7 @@ export class ChargesService {
     }
 
     // 5. Usunięcie pól wewnętrznych
-    const { created_by, lease_id: _lease_id, ...chargeDto } = createdCharge;
+    const { created_by: _created_by, lease_id: _lease_id, ...chargeDto } = createdCharge;
 
     return {
       ...chargeDto,
@@ -357,7 +356,7 @@ export class ChargesService {
     });
 
     // 4. Złożenie danych
-    const { created_by, lease_id: _lease_id, ...chargeDto } = charge;
+    const { created_by: _created_by, lease_id: _lease_id, ...chargeDto } = charge;
 
     return {
       ...chargeDto,
@@ -386,7 +385,8 @@ export class ChargesService {
     });
 
     // 1. Budowanie obiektu aktualizacji (tylko podane pola)
-    const updateData: any = {};
+
+    const updateData: Record<string, unknown> = {};
     if (data.amount !== undefined) updateData.amount = data.amount;
     if (data.due_date !== undefined) updateData.due_date = data.due_date;
     if (data.type !== undefined) updateData.type = data.type;
@@ -447,7 +447,7 @@ export class ChargesService {
     }
 
     // 5. Usunięcie pól wewnętrznych
-    const { created_by, lease_id: _lease_id, ...chargeDto } = updatedCharge;
+    const { created_by: _created_by, lease_id: _lease_id, ...chargeDto } = updatedCharge;
 
     return { ...chargeDto, attachment_url } as ChargeListItemDTO;
   }
@@ -597,6 +597,7 @@ export class ChargesService {
       throw new Error("CHARGE_NOT_FOUND");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const apartmentId = (charge.lease as any).apartment.id;
 
     console.log("[ChargesService.uploadAttachment] Znaleziono opłatę:", {

@@ -150,6 +150,7 @@ export default function LoginForm() {
                   <Input
                     type="email"
                     autoComplete="email"
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
                     autoFocus
                     placeholder="jan@example.com"
                     {...field}

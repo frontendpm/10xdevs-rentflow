@@ -230,6 +230,7 @@ export class ApartmentService {
    * @throws {Error} - Jeśli nie udało się utworzyć mieszkania
    */
   async createApartment(userId: string, command: CreateApartmentCommand): Promise<Tables<"apartments">> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error: insertError } = await (this.supabase.rpc as any)("create_apartment_rpc", {
       p_name: command.name,
       p_address: command.address,
@@ -336,6 +337,7 @@ export class ApartmentService {
     }
 
     // Usuń pole leases z response (zostało przetransformowane do lease)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (apartment as any).leases;
 
     return apartment;

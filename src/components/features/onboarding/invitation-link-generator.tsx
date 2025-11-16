@@ -72,14 +72,11 @@ export default function InvitationLinkGenerator({ apartment, invitation, onGener
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Link zapraszający</label>
+            <label htmlFor="invitation-link" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Link zapraszający
+            </label>
             <div className="flex gap-2">
-              <Input
-                value={invitation.url}
-                readOnly
-                className="flex-1 font-mono text-sm"
-                aria-label="Link zapraszający"
-              />
+              <Input id="invitation-link" value={invitation.url} readOnly className="flex-1 font-mono text-sm" />
               <Button
                 onClick={handleCopy}
                 variant="outline"

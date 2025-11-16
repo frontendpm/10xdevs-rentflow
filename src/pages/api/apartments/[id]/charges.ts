@@ -95,6 +95,7 @@ export async function GET(context: APIContext): Promise<Response> {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("[GET /api/apartments/:id/charges] Error:", {
       userId: user.id,
@@ -264,6 +265,7 @@ export async function POST(context: APIContext): Promise<Response> {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("[POST /api/apartments/:id/charges] Error:", {
       userId: user.id,

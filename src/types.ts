@@ -10,7 +10,7 @@
  * - Commands: Types for API requests (e.g., CreateApartmentCommand, UpdateChargeCommand)
  */
 
-import type { Database, Tables, TablesInsert, TablesUpdate, Enums } from "./db/database.types";
+import type { Tables, TablesInsert, TablesUpdate, Enums } from "./db/database.types";
 
 // =============================================================================
 // HELPER TYPES - Reusable partial types for nested objects

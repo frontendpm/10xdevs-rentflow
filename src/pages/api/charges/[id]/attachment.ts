@@ -119,6 +119,7 @@ export async function POST(context: APIContext): Promise<Response> {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("[POST /api/charges/:id/attachment] Error:", {
       userId: user.id,
@@ -262,6 +263,7 @@ export async function DELETE(context: APIContext): Promise<Response> {
 
     // Success - 204 No Content
     return new Response(null, { status: 204 });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("[DELETE /api/charges/:id/attachment] Error:", {
       userId: user.id,

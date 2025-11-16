@@ -51,7 +51,7 @@ export default function NewApartmentView({ redirectPath = "/dashboard" }: NewApa
       }
 
       // Sukces - pokaż toast i przekieruj
-      const apartment: Tables<"apartments"> = await response.json();
+      const _apartment: Tables<"apartments"> = await response.json();
 
       toast.success("Mieszkanie zostało dodane");
 
