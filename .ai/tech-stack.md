@@ -196,9 +196,26 @@ Rentflow to aplikacja webowa (RWD) zbudowana w oparciu o nowoczesny stack techno
 - **ESLint** - linting JavaScript/TypeScript
 - **Prettier** - formatowanie kodu
 
-### Testing (opcjonalnie dla MVP)
-- **Vitest** - unit tests
-- **Testing Library** - React component tests
+### Testing
+- **Vitest** - framework do testów jednostkowych i integracyjnych
+  - Szybki i kompatybilny z Jest API
+  - Natywne wsparcie dla TypeScript
+  - Watch mode dla development
+  - Testy serwisów domenowych (`src/lib/services`)
+  - Testy schematów walidacyjnych Zod
+  - Testy funkcji pomocniczych
+
+- **React Testing Library** - testy komponentów React
+  - Testowanie formularzy (logowanie, rejestracja, opłaty)
+  - Walidacja zachowań UI i stanów błędów
+  - Symulacja interakcji użytkownika
+
+- **Playwright** - testy end-to-end (E2E)
+  - Cross-browser testing (Chrome, Firefox, Safari)
+  - Mobile viewport testing (RWD)
+  - Pełne przepływy użytkownika
+  - Integracja z axe-core dla testów dostępności
+  - Snapshot testing dla regresji wizualnej
 
 ### Environment Management
 - `.env.local` - lokalne zmienne

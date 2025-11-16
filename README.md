@@ -62,6 +62,13 @@ The application follows the principle of "maximum value with maximum simplicity,
 - **Husky** v9.1.7 - Git hooks for pre-commit checks
 - **lint-staged** v15.5.0 - Run linters on staged files
 
+### Testing
+
+- **Vitest** - Fast unit test framework for TypeScript/JavaScript
+- **React Testing Library** - Testing utilities for React components
+- **Playwright** - End-to-end testing framework with cross-browser support
+- **axe-core** - Accessibility testing engine (integrated with Playwright)
+
 ## Getting Started Locally
 
 ### Prerequisites
