@@ -65,9 +65,7 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
         const errorData = await response.json().catch(() => ({}));
 
         if (response.status === 400) {
-          throw new Error(
-            errorData.message || "To mieszkanie ma już aktywnego lokatora"
-          );
+          throw new Error(errorData.message || "To mieszkanie ma już aktywnego lokatora");
         } else if (response.status === 403) {
           throw new Error("Nie masz uprawnień do wykonania tej akcji");
         } else if (response.status === 500) {
@@ -86,8 +84,7 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
 
       toast.success("Link zapraszający został wygenerowany");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd";
+      const message = error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd";
 
       setInvitation({
         url: "",
@@ -110,32 +107,24 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
         <CardHeader>
           <CardTitle>Lokator</CardTitle>
           <CardDescription>
-            {hasActiveLease
-              ? "Zarządzaj aktywnym najmem"
-              : "Zaproś lokatora do mieszkania"}
+            {hasActiveLease ? "Zarządzaj aktywnym najmem" : "Zaproś lokatora do mieszkania"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {hasActiveLease ? (
             <div className="space-y-4">
               <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
-                <h3 className="font-semibold text-neutral-900 dark:text-neutral-50">
-                  Aktywny lokator
-                </h3>
+                <h3 className="font-semibold text-neutral-900 dark:text-neutral-50">Aktywny lokator</h3>
                 <div className="mt-2 space-y-1 text-sm">
                   <p className="text-neutral-700 dark:text-neutral-300">
-                    <span className="font-medium">Imię:</span>{" "}
-                    {apartment.lease.tenant.full_name}
+                    <span className="font-medium">Imię:</span> {apartment.lease.tenant.full_name}
                   </p>
                   <p className="text-neutral-700 dark:text-neutral-300">
-                    <span className="font-medium">Email:</span>{" "}
-                    {apartment.lease.tenant.email}
+                    <span className="font-medium">Email:</span> {apartment.lease.tenant.email}
                   </p>
                   <p className="text-neutral-700 dark:text-neutral-300">
                     <span className="font-medium">Data rozpoczęcia:</span>{" "}
-                    {new Date(apartment.lease.start_date).toLocaleDateString(
-                      "pl-PL"
-                    )}
+                    {new Date(apartment.lease.start_date).toLocaleDateString("pl-PL")}
                   </p>
                 </div>
               </div>
@@ -150,9 +139,7 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
           ) : isLoadingInvitation ? (
             <div className="flex items-center justify-center py-4">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-300 border-t-primary" />
-              <span className="ml-2 text-sm text-neutral-600 dark:text-neutral-400">
-                Ładowanie...
-              </span>
+              <span className="ml-2 text-sm text-neutral-600 dark:text-neutral-400">Ładowanie...</span>
             </div>
           ) : (
             <InvitationLinkGenerator
@@ -172,9 +159,7 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
       <Card>
         <CardHeader>
           <CardTitle>Edycja mieszkania</CardTitle>
-          <CardDescription>
-            Zmień nazwę lub adres mieszkania
-          </CardDescription>
+          <CardDescription>Zmień nazwę lub adres mieszkania</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -187,9 +172,7 @@ export default function ApartmentSettingsTab({ apartment }: ApartmentSettingsTab
       <Card>
         <CardHeader>
           <CardTitle>Usuwanie mieszkania</CardTitle>
-          <CardDescription>
-            Trwale usuń mieszkanie z systemu
-          </CardDescription>
+          <CardDescription>Trwale usuń mieszkanie z systemu</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">

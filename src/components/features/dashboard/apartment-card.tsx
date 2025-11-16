@@ -22,30 +22,22 @@ export function ApartmentCard({ apartment }: ApartmentCardProps) {
             <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-50 group-hover:text-neutral-700 dark:group-hover:text-neutral-300 transition-colors">
               {apartment.name}
             </h3>
-            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-              {apartment.address}
-            </p>
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{apartment.address}</p>
           </div>
 
           <div className="mt-2 flex flex-col gap-2 border-t border-neutral-200 pt-3 dark:border-neutral-800">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                Status:
-              </span>
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">Status:</span>
               <span className="text-sm font-medium text-neutral-900 dark:text-neutral-50">
                 {apartment.tenantStatusLabel}
               </span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                Finanse:
-              </span>
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">Finanse:</span>
               <span
                 className={`text-sm font-semibold ${
-                  apartment.isOverdue
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-neutral-900 dark:text-neutral-50"
+                  apartment.isOverdue ? "text-red-600 dark:text-red-400" : "text-neutral-900 dark:text-neutral-50"
                 }`}
               >
                 {apartment.balanceLabel}
@@ -57,4 +49,3 @@ export function ApartmentCard({ apartment }: ApartmentCardProps) {
     </a>
   );
 }
-

@@ -22,11 +22,7 @@ if (!apartmentId) {
 }
 
 // Sprawdzenie roli użytkownika - tylko właściciele mogą dodawać opłaty
-const { data: userData, error: userError } = await supabase
-  .from("users")
-  .select("role")
-  .eq("id", user.id)
-  .single();
+const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
 // Guard clause - sprawdzenie czy użytkownik istnieje w bazie
 if (userError || !userData) {
@@ -79,9 +75,7 @@ const apartmentName = apartmentData.name;
   <div class="space-y-6">
     <!-- Breadcrumbs -->
     <nav class="flex items-center text-sm text-neutral-500 dark:text-neutral-400" aria-label="Breadcrumb">
-      <a href="/dashboard" class="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors">
-        Dashboard
-      </a>
+      <a href="/dashboard" class="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"> Dashboard </a>
       <span class="mx-2">/</span>
       <a
         href={`/apartments/${apartmentId}`}
@@ -95,21 +89,13 @@ const apartmentName = apartmentData.name;
 
     <!-- Header -->
     <div>
-      <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
-        Dodaj opłatę
-      </h1>
-      <p class="mt-1 text-neutral-600 dark:text-neutral-400">
-        Utwórz nową opłatę dla lokatora tego mieszkania
-      </p>
+      <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">Dodaj opłatę</h1>
+      <p class="mt-1 text-neutral-600 dark:text-neutral-400">Utwórz nową opłatę dla lokatora tego mieszkania</p>
     </div>
 
     <!-- Formularz -->
     <div class="max-w-2xl">
-      <ChargeForm
-        client:load
-        apartmentId={apartmentId}
-        apartmentName={apartmentName}
-      />
+      <ChargeForm client:load apartmentId={apartmentId} apartmentName={apartmentName} />
     </div>
   </div>
 </DashboardLayout>

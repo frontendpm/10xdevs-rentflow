@@ -1,5 +1,5 @@
-import type { TenantDashboardNavCardVM } from './types';
-import { DashboardNavCard } from './dashboard-nav-card';
+import type { TenantDashboardNavCardVM } from "./types";
+import { DashboardNavCard } from "./dashboard-nav-card";
 
 interface TenantDashboardSectionsProps {
   cards: TenantDashboardNavCardVM[];

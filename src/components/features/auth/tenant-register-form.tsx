@@ -3,14 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -63,25 +56,22 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
 
     try {
       // Krok 1: Rejestracja lokatora przez Supabase Auth
-      const signupResponse = await fetch(
-        `${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/signup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+      const signupResponse = await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          data: {
+            full_name: values.full_name,
+            role: "tenant",
           },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-            data: {
-              full_name: values.full_name,
-              role: "tenant",
-            },
-          }),
-        }
-      );
+        }),
+      });
 
       const signupData = await signupResponse.json();
 
@@ -114,21 +104,18 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
       // Signup nie ustawia automatycznie sesji, więc musimy zalogować użytkownika
       console.log("Logging in user after signup...");
 
-      const loginResponse = await fetch(
-        `${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-          }),
-        }
-      );
+      const loginResponse = await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      });
 
       const loginData = await loginResponse.json();
       console.log("Login after signup response:", loginData);
@@ -220,8 +207,7 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
     } catch (error) {
       console.error("Registration error:", error);
       setGlobalError({
-        message:
-          "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
+        message: "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
       });
     } finally {
       setIsSubmitting(false);
@@ -245,11 +231,7 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
               <FormItem>
                 <FormLabel>Imię i nazwisko</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Jan Kowalski"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input placeholder="Jan Kowalski" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -263,12 +245,7 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
               <FormItem>
                 <FormLabel>E-mail</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="jan@example.com"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input type="email" placeholder="jan@example.com" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -282,12 +259,7 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
               <FormItem>
                 <FormLabel>Hasło</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input type="password" placeholder="••••••••" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -301,12 +273,7 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
               <FormItem>
                 <FormLabel>Powtórz hasło</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input type="password" placeholder="••••••••" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -319,11 +286,7 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isSubmitting}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting} />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel className="text-sm font-normal">
@@ -352,20 +315,13 @@ export default function TenantRegisterForm({ token }: TenantRegisterFormProps) {
             )}
           />
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting || !form.formState.isValid}
-          >
+          <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isValid}>
             {isSubmitting ? "Tworzenie konta..." : "Załóż konto"}
           </Button>
 
           <p className="text-center text-sm text-neutral-600 dark:text-neutral-400">
             Masz już konto?{" "}
-            <a
-              href="/login"
-              className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-            >
+            <a href="/login" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">
               Zaloguj się
             </a>
           </p>

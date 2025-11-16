@@ -8,10 +8,20 @@ interface ChargeListProps {
 
 // Formatowanie nazwy miesiąca z "YYYY-MM" na "Miesiąc YYYY"
 function formatMonthLabel(monthKey: string): string {
-  const [year, month] = monthKey.split('-');
+  const [year, month] = monthKey.split("-");
   const monthNames = [
-    'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
-    'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'
+    "Styczeń",
+    "Luty",
+    "Marzec",
+    "Kwiecień",
+    "Maj",
+    "Czerwiec",
+    "Lipiec",
+    "Sierpień",
+    "Wrzesień",
+    "Październik",
+    "Listopad",
+    "Grudzień",
   ];
 
   const monthIndex = parseInt(month, 10) - 1;

@@ -1,6 +1,6 @@
-import { Receipt, ClipboardList, ClipboardCheck } from 'lucide-react';
-import type { DashboardTenantDTO } from '@/types';
-import type { TenantDashboardViewModel, TenantDashboardNavCardVM } from './types';
+import { Receipt, ClipboardList, ClipboardCheck } from "lucide-react";
+import type { DashboardTenantDTO } from "@/types";
+import type { TenantDashboardViewModel, TenantDashboardNavCardVM } from "./types";
 
 /**
  * Formatuje kwotę pieniężną do postaci tekstowej z polskim formatowaniem
@@ -8,7 +8,7 @@ import type { TenantDashboardViewModel, TenantDashboardNavCardVM } from './types
  * @returns sformatowana kwota (np. "2 000" dla 2000)
  */
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('pl-PL', {
+  return new Intl.NumberFormat("pl-PL", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);
@@ -28,10 +28,10 @@ function formatCurrency(amount: number): string {
 export function useTenantDashboardViewModel(dashboard: DashboardTenantDTO): TenantDashboardViewModel {
   // Defensywne pobranie danych z DTO
   const apartment = dashboard.apartment || {
-    id: '',
-    name: 'Nieznane mieszkanie',
-    address: '',
-    owner: { id: '', full_name: 'Nieznany właściciel', email: '' },
+    id: "",
+    name: "Nieznane mieszkanie",
+    address: "",
+    owner: { id: "", full_name: "Nieznany właściciel", email: "" },
   };
 
   const financialSummary = dashboard.financial_summary || {
@@ -52,20 +52,20 @@ export function useTenantDashboardViewModel(dashboard: DashboardTenantDTO): Tena
   // Budowanie kart nawigacyjnych
   const navCards: TenantDashboardNavCardVM[] = [
     {
-      title: 'Lista opłat',
-      description: 'Zobacz wszystkie swoje opłaty i ich statusy',
+      title: "Lista opłat",
+      description: "Zobacz wszystkie swoje opłaty i ich statusy",
       href: `/apartments/${apartment.id}`,
       icon: Receipt,
     },
     {
-      title: 'Protokół Odbioru',
-      description: 'Dokumentacja stanu mieszkania przy odbiorze',
+      title: "Protokół Odbioru",
+      description: "Dokumentacja stanu mieszkania przy odbiorze",
       href: `/apartments/${apartment.id}#protokol-odbioru`,
       icon: ClipboardList,
     },
     {
-      title: 'Protokół Zwrotu',
-      description: 'Dokumentacja stanu mieszkania przy zwrocie',
+      title: "Protokół Zwrotu",
+      description: "Dokumentacja stanu mieszkania przy zwrocie",
       href: `/apartments/${apartment.id}#protokol-zwrotu`,
       icon: ClipboardCheck,
     },

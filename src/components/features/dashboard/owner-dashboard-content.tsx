@@ -24,4 +24,3 @@ export function OwnerDashboardContent({ viewModel }: OwnerDashboardContentProps)
 
   return <ApartmentList apartments={viewModel.apartments} />;
 }
-

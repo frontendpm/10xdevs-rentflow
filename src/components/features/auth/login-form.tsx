@@ -3,14 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 const loginSchema = z.object({
@@ -43,21 +36,18 @@ export default function LoginForm() {
     setGlobalError(null);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-          }),
-        }
-      );
+      const response = await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -121,7 +111,7 @@ export default function LoginForm() {
 
         if (apartmentsResponse.ok) {
           const apartmentsData = await apartmentsResponse.json();
-          
+
           if (apartmentsData.apartments && apartmentsData.apartments.length === 0) {
             window.location.href = "/onboarding";
             return;
@@ -133,8 +123,7 @@ export default function LoginForm() {
     } catch (error) {
       console.error("Login error:", error);
       setGlobalError({
-        message:
-          "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
+        message: "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
       });
     } finally {
       setIsSubmitting(false);
@@ -144,14 +133,8 @@ export default function LoginForm() {
   return (
     <div className="space-y-6">
       {globalError && (
-        <div
-          className="rounded-lg border border-destructive/50 bg-destructive/10 p-4"
-          role="alert"
-          aria-live="polite"
-        >
-          <p className="text-sm font-medium text-destructive">
-            {globalError.message}
-          </p>
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4" role="alert" aria-live="polite">
+          <p className="text-sm font-medium text-destructive">{globalError.message}</p>
         </div>
       )}
 
@@ -207,20 +190,13 @@ export default function LoginForm() {
             </a>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting || !form.formState.isValid}
-          >
+          <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isValid}>
             {isSubmitting ? "Logowanie..." : "Zaloguj się"}
           </Button>
 
           <p className="text-center text-sm text-neutral-600 dark:text-neutral-400">
             Nie masz jeszcze konta?{" "}
-            <a
-              href="/register"
-              className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-            >
+            <a href="/register" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">
               Załóż konto właściciela
             </a>
           </p>
@@ -229,4 +205,3 @@ export default function LoginForm() {
     </div>
   );
 }
-

@@ -59,11 +59,11 @@ if (errorStatus) {
 }
 
 // Określenie roli użytkownika
-let role: 'owner' | 'tenant';
+let role: "owner" | "tenant";
 if (apartmentDetails.owner_id === user.id) {
-  role = 'owner';
+  role = "owner";
 } else if (apartmentDetails.lease && apartmentDetails.lease.tenant.id === user.id) {
-  role = 'tenant';
+  role = "tenant";
 } else {
   // Użytkownik nie ma dostępu do tego mieszkania
   return Astro.redirect("/403");
@@ -84,18 +84,13 @@ const breadcrumbItems = [
       <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
         {apartmentDetails.name}
       </h1>
-      {apartmentDetails.address && (
-        <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-          {apartmentDetails.address}
-        </p>
-      )}
+      {
+        apartmentDetails.address && (
+          <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">{apartmentDetails.address}</p>
+        )
+      }
     </div>
 
-    <ApartmentDetailsView
-      client:load
-      apartmentId={apartmentId}
-      initialApartment={apartmentDetails}
-      role={role}
-    />
+    <ApartmentDetailsView client:load apartmentId={apartmentId} initialApartment={apartmentDetails} role={role} />
   </div>
 </DashboardLayout>

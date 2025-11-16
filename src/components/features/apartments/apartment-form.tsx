@@ -1,21 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { apartmentFormSchema } from "@/lib/validation/apartments.validation";
 import type { ApartmentFormValues } from "@/types/onboarding";
 
 interface ApartmentFormProps {
   defaultValues?: ApartmentFormValues;
-  mode?: 'onboarding' | 'standalone';
+  mode?: "onboarding" | "standalone";
   onSubmit: (values: ApartmentFormValues) => Promise<void> | void;
   isSubmitting?: boolean;
   submitButtonText?: string;
@@ -23,7 +16,7 @@ interface ApartmentFormProps {
 
 export default function ApartmentForm({
   defaultValues,
-  mode = 'standalone',
+  mode = "standalone",
   onSubmit,
   isSubmitting = false,
   submitButtonText,
@@ -42,7 +35,7 @@ export default function ApartmentForm({
   };
 
   const getPlaceholders = () => {
-    if (mode === 'onboarding') {
+    if (mode === "onboarding") {
       return {
         name: "np. Mieszkanie przy Głównej 15",
         address: "ul. Główna 15/3, 00-001 Warszawa",
@@ -55,7 +48,7 @@ export default function ApartmentForm({
   };
 
   const placeholders = getPlaceholders();
-  const buttonText = submitButtonText || (mode === 'onboarding' ? 'Dalej' : 'Zapisz');
+  const buttonText = submitButtonText || (mode === "onboarding" ? "Dalej" : "Zapisz");
 
   return (
     <Form {...form}>
@@ -67,11 +60,7 @@ export default function ApartmentForm({
             <FormItem>
               <FormLabel>Nazwa mieszkania</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={placeholders.name}
-                  {...field}
-                  disabled={isSubmitting}
-                />
+                <Input placeholder={placeholders.name} {...field} disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,26 +74,17 @@ export default function ApartmentForm({
             <FormItem>
               <FormLabel>Adres</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={placeholders.address}
-                  {...field}
-                  disabled={isSubmitting}
-                />
+                <Input placeholder={placeholders.address} {...field} disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isSubmitting || !form.formState.isValid}
-        >
+        <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isValid}>
           {isSubmitting ? "Zapisywanie..." : buttonText}
         </Button>
       </form>
     </Form>
   );
 }
-

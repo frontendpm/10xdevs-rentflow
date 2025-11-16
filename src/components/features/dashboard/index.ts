@@ -6,4 +6,3 @@ export { ApartmentCard } from "./apartment-card";
 export { DashboardEmptyState } from "./dashboard-empty-state";
 export { useOwnerDashboardViewModel } from "./useOwnerDashboardViewModel";
 export type { OwnerDashboardViewModel, OwnerDashboardApartmentCardVM } from "./types";
-

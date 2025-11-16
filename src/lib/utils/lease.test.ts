@@ -18,10 +18,7 @@ const createTenant = (overrides?: Partial<TenantInfo>): TenantInfo => ({
   ...overrides,
 });
 
-const createLease = (
-  status: "active" | "archived",
-  overrides?: Partial<LeaseInfo>
-): LeaseInfo => ({
+const createLease = (status: "active" | "archived", overrides?: Partial<LeaseInfo>): LeaseInfo => ({
   id: "lease-456",
   status,
   start_date: "2024-01-01",
@@ -29,9 +26,7 @@ const createLease = (
   ...overrides,
 });
 
-const createApartment = (
-  lease?: LeaseInfo
-): ApartmentDetailsDTO => ({
+const createApartment = (lease?: LeaseInfo): ApartmentDetailsDTO => ({
   id: "apt-789",
   name: "Apartament Centrum",
   address: "ul. Główna 10, 00-001 Warszawa",
@@ -106,14 +101,10 @@ describe("hasActiveLease", () => {
 
     it("powinno zwrócić true niezależnie od daty rozpoczęcia", () => {
       // Arrange - stary najem
-      const oldLease = createApartment(
-        createLease("active", { start_date: "2020-01-01" })
-      );
+      const oldLease = createApartment(createLease("active", { start_date: "2020-01-01" }));
 
       // Arrange - nowy najem
-      const newLease = createApartment(
-        createLease("active", { start_date: "2025-01-01" })
-      );
+      const newLease = createApartment(createLease("active", { start_date: "2025-01-01" }));
 
       // Act & Assert
       expect(hasActiveLease(oldLease)).toBe(true);
@@ -199,7 +190,7 @@ describe("hasActiveLease", () => {
 
     it("powinno zwrócić true tylko gdy status === 'active'", () => {
       // Arrange
-      const testCases: Array<{ status: "active" | "archived"; expected: boolean }> = [
+      const testCases: { status: "active" | "archived"; expected: boolean }[] = [
         { status: "active", expected: true },
         { status: "archived", expected: false },
       ];

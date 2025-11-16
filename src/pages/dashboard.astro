@@ -21,11 +21,7 @@ let dashboardData: DashboardDTO | null = null;
 let errorMessage: string | null = null;
 
 try {
-  const { data: userData, error: userError } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
+  const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
   // Guard clause - sprawdzenie czy użytkownik istnieje w bazie
   if (userError || !userData) {
@@ -60,9 +56,7 @@ try {
   {
     errorMessage ? (
       <div class="rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-900 dark:bg-red-950">
-        <p class="text-lg font-semibold text-red-900 dark:text-red-100">
-          Wystąpił błąd
-        </p>
+        <p class="text-lg font-semibold text-red-900 dark:text-red-100">Wystąpił błąd</p>
         <p class="mt-2 text-red-700 dark:text-red-300">{errorMessage}</p>
         <a
           href="mailto:pomoc@rentflow.pl"
@@ -77,9 +71,7 @@ try {
       <TenantDashboardIsland dashboard={dashboardData} client:load />
     ) : (
       <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-6 text-center dark:border-neutral-800 dark:bg-neutral-900">
-        <p class="text-neutral-900 dark:text-neutral-100">
-          Nie znaleziono danych dashboardu.
-        </p>
+        <p class="text-neutral-900 dark:text-neutral-100">Nie znaleziono danych dashboardu.</p>
       </div>
     )
   }

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, User, AlertTriangle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Home, User, AlertTriangle } from "lucide-react";
 
 interface TenantSummaryCardProps {
   apartmentName: string;

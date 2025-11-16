@@ -10,7 +10,7 @@
  * - Commands: Types for API requests (e.g., CreateApartmentCommand, UpdateChargeCommand)
  */
 
-import type { Database, Tables, TablesInsert, TablesUpdate, Enums } from './db/database.types';
+import type { Database, Tables, TablesInsert, TablesUpdate, Enums } from "./db/database.types";
 
 // =============================================================================
 // HELPER TYPES - Reusable partial types for nested objects
@@ -19,7 +19,7 @@ import type { Database, Tables, TablesInsert, TablesUpdate, Enums } from './db/d
 /**
  * Partial user information for tenant/owner references
  */
-export type UserInfo = Pick<Tables<'users'>, 'id' | 'full_name' | 'email'>;
+export type UserInfo = Pick<Tables<"users">, "id" | "full_name" | "email">;
 
 /**
  * Tenant-specific user information
@@ -34,37 +34,34 @@ export type OwnerInfo = UserInfo;
 /**
  * Financial summary metrics for apartments
  */
-export type FinancialSummary = {
+export interface FinancialSummary {
   total_unpaid: number;
   total_partially_paid: number;
   total_overdue: number;
   upcoming_charges_count: number;
-};
+}
 
 /**
  * Simplified financial summary for dashboard
  */
-export type SimplifiedFinancialSummary = Pick<FinancialSummary, 'total_unpaid' | 'total_overdue'>;
+export type SimplifiedFinancialSummary = Pick<FinancialSummary, "total_unpaid" | "total_overdue">;
 
 /**
  * Upcoming charge information for tenant dashboard
  */
-export type UpcomingChargeInfo = Pick<
-  Tables<'charges'>,
-  'id' | 'amount' | 'due_date' | 'type'
->;
+export type UpcomingChargeInfo = Pick<Tables<"charges">, "id" | "amount" | "due_date" | "type">;
 
 /**
  * Lease information for apartment listings
  */
-export type LeaseInfo = Pick<Tables<'leases'>, 'id' | 'status' | 'start_date'> & {
+export type LeaseInfo = Pick<Tables<"leases">, "id" | "status" | "start_date"> & {
   tenant: TenantInfo;
 };
 
 /**
  * Accepted by user information for invitation listings
  */
-export type AcceptedByInfo = Pick<Tables<'users'>, 'id' | 'full_name'>;
+export type AcceptedByInfo = Pick<Tables<"users">, "id" | "full_name">;
 
 // =============================================================================
 // USER MANAGEMENT DTOs
@@ -74,15 +71,15 @@ export type AcceptedByInfo = Pick<Tables<'users'>, 'id' | 'full_name'>;
  * User profile DTO
  * @endpoint GET /api/users/me
  */
-export type UserProfileDTO = Tables<'users'>;
+export type UserProfileDTO = Tables<"users">;
 
 /**
  * Update user profile command
  * @endpoint PATCH /api/users/me
  */
-export type UpdateUserProfileCommand = {
+export interface UpdateUserProfileCommand {
   full_name: string;
-};
+}
 
 // =============================================================================
 // APARTMENT MANAGEMENT DTOs & Commands
@@ -92,7 +89,7 @@ export type UpdateUserProfileCommand = {
  * Apartment list item DTO (Owner view)
  * @endpoint GET /api/apartments
  */
-export type ApartmentListItemOwnerDTO = Tables<'apartments'> & {
+export type ApartmentListItemOwnerDTO = Tables<"apartments"> & {
   lease?: LeaseInfo;
 };
 
@@ -100,10 +97,7 @@ export type ApartmentListItemOwnerDTO = Tables<'apartments'> & {
  * Apartment list item DTO (Tenant view)
  * @endpoint GET /api/apartments
  */
-export type ApartmentListItemTenantDTO = Pick<
-  Tables<'apartments'>,
-  'id' | 'name' | 'address'
-> & {
+export type ApartmentListItemTenantDTO = Pick<Tables<"apartments">, "id" | "name" | "address"> & {
   owner: OwnerInfo;
 };
 
@@ -111,21 +105,21 @@ export type ApartmentListItemTenantDTO = Pick<
  * Apartment list response DTO
  * @endpoint GET /api/apartments
  */
-export type ApartmentListDTO = {
+export interface ApartmentListDTO {
   apartments: (ApartmentListItemOwnerDTO | ApartmentListItemTenantDTO)[];
-};
+}
 
 /**
  * Create apartment command
  * @endpoint POST /api/apartments
  */
-export type CreateApartmentCommand = Pick<TablesInsert<'apartments'>, 'name' | 'address'>;
+export type CreateApartmentCommand = Pick<TablesInsert<"apartments">, "name" | "address">;
 
 /**
  * Apartment details DTO
  * @endpoint GET /api/apartments/:id
  */
-export type ApartmentDetailsDTO = Tables<'apartments'> & {
+export type ApartmentDetailsDTO = Tables<"apartments"> & {
   lease?: LeaseInfo;
 };
 
@@ -133,21 +127,21 @@ export type ApartmentDetailsDTO = Tables<'apartments'> & {
  * Update apartment command
  * @endpoint PATCH /api/apartments/:id
  */
-export type UpdateApartmentCommand = Partial<Pick<TablesUpdate<'apartments'>, 'name' | 'address'>>;
+export type UpdateApartmentCommand = Partial<Pick<TablesUpdate<"apartments">, "name" | "address">>;
 
 /**
  * Apartment summary DTO
  * @endpoint GET /api/apartments/:id/summary
  */
-export type ApartmentSummaryDTO = {
-  apartment: Pick<Tables<'apartments'>, 'id' | 'name' | 'address'>;
+export interface ApartmentSummaryDTO {
+  apartment: Pick<Tables<"apartments">, "id" | "name" | "address">;
   lease?: {
     id: string;
-    status: Enums<'lease_status'>;
-    tenant: Pick<Tables<'users'>, 'full_name'>;
+    status: Enums<"lease_status">;
+    tenant: Pick<Tables<"users">, "full_name">;
   };
   financial_summary: FinancialSummary;
-};
+}
 
 // =============================================================================
 // INVITATION MANAGEMENT DTOs & Commands
@@ -158,8 +152,8 @@ export type ApartmentSummaryDTO = {
  * @endpoint POST /api/apartments/:apartmentId/invitations
  */
 export type CreateInvitationResponseDTO = Pick<
-  Tables<'invitation_links'>,
-  'id' | 'apartment_id' | 'token' | 'status' | 'created_at'
+  Tables<"invitation_links">,
+  "id" | "apartment_id" | "token" | "status" | "created_at"
 > & {
   invitation_url: string;
 };
@@ -168,10 +162,7 @@ export type CreateInvitationResponseDTO = Pick<
  * Invitation list item DTO
  * @endpoint GET /api/apartments/:apartmentId/invitations
  */
-export type InvitationListItemDTO = Pick<
-  Tables<'invitation_links'>,
-  'id' | 'token' | 'status' | 'created_at'
-> & {
+export type InvitationListItemDTO = Pick<Tables<"invitation_links">, "id" | "token" | "status" | "created_at"> & {
   accepted_by?: AcceptedByInfo;
 };
 
@@ -179,30 +170,27 @@ export type InvitationListItemDTO = Pick<
  * Invitation list response DTO
  * @endpoint GET /api/apartments/:apartmentId/invitations
  */
-export type InvitationListDTO = {
+export interface InvitationListDTO {
   invitations: InvitationListItemDTO[];
-};
+}
 
 /**
  * Validate invitation DTO
  * @endpoint GET /api/invitations/:token
  */
-export type ValidateInvitationDTO = {
+export interface ValidateInvitationDTO {
   valid: boolean;
-  apartment: Pick<Tables<'apartments'>, 'name' | 'address'>;
-  owner: Pick<Tables<'users'>, 'full_name'>;
-};
+  apartment: Pick<Tables<"apartments">, "name" | "address">;
+  owner: Pick<Tables<"users">, "full_name">;
+}
 
 /**
  * Accept invitation response DTO
  * @endpoint POST /api/invitations/:token/accept
  */
-export type AcceptInvitationResponseDTO = {
-  lease: Pick<
-    Tables<'leases'>,
-    'id' | 'apartment_id' | 'tenant_id' | 'status' | 'start_date' | 'created_at'
-  >;
-};
+export interface AcceptInvitationResponseDTO {
+  lease: Pick<Tables<"leases">, "id" | "apartment_id" | "tenant_id" | "status" | "start_date" | "created_at">;
+}
 
 // =============================================================================
 // LEASE MANAGEMENT DTOs & Commands
@@ -212,7 +200,7 @@ export type AcceptInvitationResponseDTO = {
  * Active lease DTO
  * @endpoint GET /api/apartments/:apartmentId/lease
  */
-export type ActiveLeaseDTO = Tables<'leases'> & {
+export type ActiveLeaseDTO = Tables<"leases"> & {
   tenant: TenantInfo;
 };
 
@@ -220,28 +208,25 @@ export type ActiveLeaseDTO = Tables<'leases'> & {
  * End lease command
  * @endpoint POST /api/apartments/:apartmentId/lease/end
  */
-export type EndLeaseCommand = {
+export interface EndLeaseCommand {
   notes?: string;
-};
+}
 
 /**
  * Lease history item DTO
  * @endpoint GET /api/apartments/:apartmentId/leases
  */
-export type LeaseHistoryItemDTO = Pick<
-  Tables<'leases'>,
-  'id' | 'status' | 'start_date' | 'archived_at'
-> & {
-  tenant: Pick<Tables<'users'>, 'full_name'>;
+export type LeaseHistoryItemDTO = Pick<Tables<"leases">, "id" | "status" | "start_date" | "archived_at"> & {
+  tenant: Pick<Tables<"users">, "full_name">;
 };
 
 /**
  * Lease history response DTO
  * @endpoint GET /api/apartments/:apartmentId/leases
  */
-export type LeaseHistoryDTO = {
+export interface LeaseHistoryDTO {
   leases: LeaseHistoryItemDTO[];
-};
+}
 
 // =============================================================================
 // CHARGE MANAGEMENT DTOs & Commands
@@ -251,10 +236,7 @@ export type LeaseHistoryDTO = {
  * Charge list item DTO (with payment status from view)
  * @endpoint GET /api/apartments/:apartmentId/charges
  */
-export type ChargeListItemDTO = Omit<
-  Tables<'charges_with_status'>,
-  'created_by' | 'lease_id'
-> & {
+export type ChargeListItemDTO = Omit<Tables<"charges_with_status">, "created_by" | "lease_id"> & {
   attachment_url?: string;
 };
 
@@ -262,18 +244,15 @@ export type ChargeListItemDTO = Omit<
  * Charges grouped by month
  * @endpoint GET /api/apartments/:apartmentId/charges
  */
-export type ChargesListDTO = {
+export interface ChargesListDTO {
   charges_by_month: Record<string, ChargeListItemDTO[]>;
-};
+}
 
 /**
  * Create charge command
  * @endpoint POST /api/apartments/:apartmentId/charges
  */
-export type CreateChargeCommand = Pick<
-  TablesInsert<'charges'>,
-  'amount' | 'due_date' | 'type'
-> & {
+export type CreateChargeCommand = Pick<TablesInsert<"charges">, "amount" | "due_date" | "type"> & {
   comment?: string;
 };
 
@@ -289,18 +268,13 @@ export type ChargeDetailsDTO = ChargeListItemDTO & {
  * Update charge command
  * @endpoint PATCH /api/charges/:id
  */
-export type UpdateChargeCommand = Partial<
-  Pick<TablesUpdate<'charges'>, 'amount' | 'due_date' | 'type' | 'comment'>
->;
+export type UpdateChargeCommand = Partial<Pick<TablesUpdate<"charges">, "amount" | "due_date" | "type" | "comment">>;
 
 /**
  * Upload charge attachment response DTO
  * @endpoint POST /api/charges/:id/attachment
  */
-export type UploadChargeAttachmentResponseDTO = Pick<
-  Tables<'charges'>,
-  'id' | 'attachment_path'
-> & {
+export type UploadChargeAttachmentResponseDTO = Pick<Tables<"charges">, "id" | "attachment_path"> & {
   attachment_url: string;
 };
 
@@ -311,30 +285,28 @@ export type UploadChargeAttachmentResponseDTO = Pick<
 /**
  * Payment DTO (base payment type)
  */
-export type PaymentDTO = Tables<'payments'>;
+export type PaymentDTO = Tables<"payments">;
 
 /**
  * Payments list response DTO
  * @endpoint GET /api/charges/:chargeId/payments
  */
-export type PaymentsListDTO = {
+export interface PaymentsListDTO {
   payments: PaymentDTO[];
   total: number;
-};
+}
 
 /**
  * Add payment command
  * @endpoint POST /api/charges/:chargeId/payments
  */
-export type AddPaymentCommand = Pick<TablesInsert<'payments'>, 'amount' | 'payment_date'>;
+export type AddPaymentCommand = Pick<TablesInsert<"payments">, "amount" | "payment_date">;
 
 /**
  * Update payment command
  * @endpoint PATCH /api/payments/:id
  */
-export type UpdatePaymentCommand = Partial<
-  Pick<TablesUpdate<'payments'>, 'amount' | 'payment_date'>
->;
+export type UpdatePaymentCommand = Partial<Pick<TablesUpdate<"payments">, "amount" | "payment_date">>;
 
 // =============================================================================
 // PROTOCOL MANAGEMENT DTOs & Commands
@@ -343,7 +315,7 @@ export type UpdatePaymentCommand = Partial<
 /**
  * Protocol photo DTO
  */
-export type ProtocolPhotoDTO = Omit<Tables<'protocol_photos'>, 'created_by'> & {
+export type ProtocolPhotoDTO = Omit<Tables<"protocol_photos">, "created_by"> & {
   file_url: string;
 };
 
@@ -351,7 +323,7 @@ export type ProtocolPhotoDTO = Omit<Tables<'protocol_photos'>, 'created_by'> & {
  * Protocol DTO
  * @endpoint GET /api/apartments/:apartmentId/protocols/:type
  */
-export type ProtocolDTO = Omit<Tables<'protocols'>, 'created_by'> & {
+export type ProtocolDTO = Omit<Tables<"protocols">, "created_by"> & {
   photos: ProtocolPhotoDTO[];
 };
 
@@ -359,9 +331,9 @@ export type ProtocolDTO = Omit<Tables<'protocols'>, 'created_by'> & {
  * Create or update protocol command
  * @endpoint PUT /api/apartments/:apartmentId/protocols/:type
  */
-export type CreateUpdateProtocolCommand = {
+export interface CreateUpdateProtocolCommand {
   description: string;
-};
+}
 
 /**
  * Upload protocol photo response DTO
@@ -376,55 +348,52 @@ export type UploadProtocolPhotoResponseDTO = ProtocolPhotoDTO;
 /**
  * Dashboard apartment item (for owner)
  */
-export type DashboardApartmentItem = Pick<
-  Tables<'apartments'>,
-  'id' | 'name' | 'address'
-> & {
-  lease_status?: Enums<'lease_status'>;
-  tenant?: Pick<Tables<'users'>, 'full_name'>;
+export type DashboardApartmentItem = Pick<Tables<"apartments">, "id" | "name" | "address"> & {
+  lease_status?: Enums<"lease_status">;
+  tenant?: Pick<Tables<"users">, "full_name">;
   financial_summary: SimplifiedFinancialSummary;
 };
 
 /**
  * Dashboard statistics (for owner)
  */
-export type DashboardStatistics = {
+export interface DashboardStatistics {
   total_apartments: number;
   active_leases: number;
   total_unpaid: number;
   total_overdue: number;
-};
+}
 
 /**
  * Dashboard owner DTO
  * @endpoint GET /api/dashboard (for owner role)
  */
-export type DashboardOwnerDTO = {
-  role: 'owner';
+export interface DashboardOwnerDTO {
+  role: "owner";
   apartments: DashboardApartmentItem[];
   statistics: DashboardStatistics;
-};
+}
 
 /**
  * Dashboard tenant financial summary
  */
-export type DashboardTenantFinancialSummary = {
+export interface DashboardTenantFinancialSummary {
   total_due: number;
   total_overdue: number;
   upcoming_charges: UpcomingChargeInfo[];
-};
+}
 
 /**
  * Dashboard tenant DTO
  * @endpoint GET /api/dashboard (for tenant role)
  */
-export type DashboardTenantDTO = {
-  role: 'tenant';
-  apartment: Pick<Tables<'apartments'>, 'id' | 'name' | 'address'> & {
+export interface DashboardTenantDTO {
+  role: "tenant";
+  apartment: Pick<Tables<"apartments">, "id" | "name" | "address"> & {
     owner: OwnerInfo;
   };
   financial_summary: DashboardTenantFinancialSummary;
-};
+}
 
 /**
  * Dashboard DTO (union of owner and tenant variants)
@@ -440,12 +409,12 @@ export type DashboardDTO = DashboardOwnerDTO | DashboardTenantDTO;
  * Type guard to check if dashboard DTO is for owner
  */
 export function isDashboardOwnerDTO(dto: DashboardDTO): dto is DashboardOwnerDTO {
-  return dto.role === 'owner';
+  return dto.role === "owner";
 }
 
 /**
  * Type guard to check if dashboard DTO is for tenant
  */
 export function isDashboardTenantDTO(dto: DashboardDTO): dto is DashboardTenantDTO {
-  return dto.role === 'tenant';
+  return dto.role === "tenant";
 }

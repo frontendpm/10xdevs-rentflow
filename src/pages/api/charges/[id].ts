@@ -1,7 +1,7 @@
-import type { APIContext } from 'astro';
-import { z } from 'zod';
-import { ChargesService } from '@/lib/services/charges.service';
-import { updateChargeSchema } from '@/lib/validation/charges.validation';
+import type { APIContext } from "astro";
+import { z } from "zod";
+import { ChargesService } from "@/lib/services/charges.service";
+import { updateChargeSchema } from "@/lib/validation/charges.validation";
 
 export const prerender = false;
 
@@ -28,10 +28,10 @@ export async function GET(context: APIContext): Promise<Response> {
   if (!user) {
     return new Response(
       JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Brak autoryzacji'
+        error: "Unauthorized",
+        message: "Brak autoryzacji",
       }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -40,10 +40,10 @@ export async function GET(context: APIContext): Promise<Response> {
   if (!chargeId) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Brak ID opłaty'
+        error: "Bad Request",
+        message: "Brak ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -52,10 +52,10 @@ export async function GET(context: APIContext): Promise<Response> {
   if (!uuidRegex.test(chargeId)) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format ID opłaty'
+        error: "Bad Request",
+        message: "Nieprawidłowy format ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -66,35 +66,34 @@ export async function GET(context: APIContext): Promise<Response> {
 
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error: any) {
-    console.error('[GET /api/charges/:id] Error:', {
+    console.error("[GET /api/charges/:id] Error:", {
       userId: user.id,
       chargeId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Obsługa specyficznych błędów
-    if (error.message === 'CHARGE_NOT_FOUND') {
+    if (error.message === "CHARGE_NOT_FOUND") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Opłata nie została znaleziona'
+          error: "Not Found",
+          message: "Opłata nie została znaleziona",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Błąd ogólny
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Wystąpił błąd podczas pobierania opłaty'
+        error: "Internal Server Error",
+        message: "Wystąpił błąd podczas pobierania opłaty",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
@@ -132,41 +131,37 @@ export async function PATCH(context: APIContext): Promise<Response> {
   if (!user) {
     return new Response(
       JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Brak autoryzacji'
+        error: "Unauthorized",
+        message: "Brak autoryzacji",
       }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
 
   // 2. Sprawdzenie czy user jest właścicielem
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
   if (userError || !userData) {
-    console.error('[PATCH /api/charges/:id] Błąd pobierania roli:', {
+    console.error("[PATCH /api/charges/:id] Błąd pobierania roli:", {
       userId: user.id,
-      error: userError
+      error: userError,
     });
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Błąd weryfikacji użytkownika'
+        error: "Internal Server Error",
+        message: "Błąd weryfikacji użytkownika",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  if (userData.role !== 'owner') {
+  if (userData.role !== "owner") {
     return new Response(
       JSON.stringify({
-        error: 'Forbidden',
-        message: 'Tylko właściciele mogą edytować opłaty'
+        error: "Forbidden",
+        message: "Tylko właściciele mogą edytować opłaty",
       }),
-      { status: 403, headers: { 'Content-Type': 'application/json' } }
+      { status: 403, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -175,10 +170,10 @@ export async function PATCH(context: APIContext): Promise<Response> {
   if (!chargeId) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Brak ID opłaty'
+        error: "Bad Request",
+        message: "Brak ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -187,10 +182,10 @@ export async function PATCH(context: APIContext): Promise<Response> {
   if (!uuidRegex.test(chargeId)) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format ID opłaty'
+        error: "Bad Request",
+        message: "Nieprawidłowy format ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -201,10 +196,10 @@ export async function PATCH(context: APIContext): Promise<Response> {
   } catch {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format JSON'
+        error: "Bad Request",
+        message: "Nieprawidłowy format JSON",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -215,11 +210,11 @@ export async function PATCH(context: APIContext): Promise<Response> {
     if (error instanceof z.ZodError) {
       return new Response(
         JSON.stringify({
-          error: 'Validation Error',
-          message: 'Nieprawidłowe dane',
-          details: error.flatten().fieldErrors
+          error: "Validation Error",
+          message: "Nieprawidłowe dane",
+          details: error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
   }
@@ -231,55 +226,54 @@ export async function PATCH(context: APIContext): Promise<Response> {
 
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error: any) {
-    console.error('[PATCH /api/charges/:id] Error:', {
+    console.error("[PATCH /api/charges/:id] Error:", {
       userId: user.id,
       chargeId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Obsługa błędów reguł biznesowych
-    if (error.message === 'CHARGE_FULLY_PAID') {
+    if (error.message === "CHARGE_FULLY_PAID") {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Nie można edytować w pełni opłaconej opłaty'
+          error: "Bad Request",
+          message: "Nie można edytować w pełni opłaconej opłaty",
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'AMOUNT_TOO_LOW') {
+    if (error.message === "AMOUNT_TOO_LOW") {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Kwota opłaty nie może być niższa niż suma dokonanych wpłat'
+          error: "Bad Request",
+          message: "Kwota opłaty nie może być niższa niż suma dokonanych wpłat",
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'CHARGE_NOT_FOUND') {
+    if (error.message === "CHARGE_NOT_FOUND") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Opłata nie została znaleziona'
+          error: "Not Found",
+          message: "Opłata nie została znaleziona",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Błąd ogólny
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Wystąpił błąd podczas aktualizacji opłaty'
+        error: "Internal Server Error",
+        message: "Wystąpił błąd podczas aktualizacji opłaty",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
@@ -310,41 +304,37 @@ export async function DELETE(context: APIContext): Promise<Response> {
   if (!user) {
     return new Response(
       JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Brak autoryzacji'
+        error: "Unauthorized",
+        message: "Brak autoryzacji",
       }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
 
   // 2. Sprawdzenie czy user jest właścicielem
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
   if (userError || !userData) {
-    console.error('[DELETE /api/charges/:id] Błąd pobierania roli:', {
+    console.error("[DELETE /api/charges/:id] Błąd pobierania roli:", {
       userId: user.id,
-      error: userError
+      error: userError,
     });
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Błąd weryfikacji użytkownika'
+        error: "Internal Server Error",
+        message: "Błąd weryfikacji użytkownika",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  if (userData.role !== 'owner') {
+  if (userData.role !== "owner") {
     return new Response(
       JSON.stringify({
-        error: 'Forbidden',
-        message: 'Tylko właściciele mogą usuwać opłaty'
+        error: "Forbidden",
+        message: "Tylko właściciele mogą usuwać opłaty",
       }),
-      { status: 403, headers: { 'Content-Type': 'application/json' } }
+      { status: 403, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -353,10 +343,10 @@ export async function DELETE(context: APIContext): Promise<Response> {
   if (!chargeId) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Brak ID opłaty'
+        error: "Bad Request",
+        message: "Brak ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -365,10 +355,10 @@ export async function DELETE(context: APIContext): Promise<Response> {
   if (!uuidRegex.test(chargeId)) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format ID opłaty'
+        error: "Bad Request",
+        message: "Nieprawidłowy format ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -379,43 +369,42 @@ export async function DELETE(context: APIContext): Promise<Response> {
 
     // Success - 204 No Content
     return new Response(null, { status: 204 });
-
   } catch (error: any) {
-    console.error('[DELETE /api/charges/:id] Error:', {
+    console.error("[DELETE /api/charges/:id] Error:", {
       userId: user.id,
       chargeId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Obsługa specyficznych błędów
-    if (error.message === 'CHARGE_NOT_FOUND') {
+    if (error.message === "CHARGE_NOT_FOUND") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Opłata nie została znaleziona'
+          error: "Not Found",
+          message: "Opłata nie została znaleziona",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'CANNOT_DELETE_PAID_CHARGE') {
+    if (error.message === "CANNOT_DELETE_PAID_CHARGE") {
       return new Response(
         JSON.stringify({
-          error: 'Bad Request',
-          message: 'Nie można usunąć w pełni opłaconej opłaty'
+          error: "Bad Request",
+          message: "Nie można usunąć w pełni opłaconej opłaty",
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Błąd ogólny
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Wystąpił błąd podczas usuwania opłaty'
+        error: "Internal Server Error",
+        message: "Wystąpił błąd podczas usuwania opłaty",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

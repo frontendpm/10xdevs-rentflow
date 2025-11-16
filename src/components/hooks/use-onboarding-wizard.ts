@@ -39,7 +39,7 @@ export function useOnboardingWizard() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        
+
         if (response.status === 400) {
           throw new Error(errorData.message || "Dane formularza są nieprawidłowe");
         } else if (response.status === 403) {
@@ -100,11 +100,9 @@ export function useOnboardingWizard() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        
+
         if (response.status === 400) {
-          throw new Error(
-            errorData.message || "To mieszkanie ma już aktywnego lokatora"
-          );
+          throw new Error(errorData.message || "To mieszkanie ma już aktywnego lokatora");
         } else if (response.status === 403) {
           throw new Error("Nie masz uprawnień do wykonania tej akcji");
         } else if (response.status === 500) {
@@ -158,4 +156,3 @@ export function useOnboardingWizard() {
     finish,
   };
 }
-

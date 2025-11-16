@@ -3,10 +3,6 @@ import AuthLayout from "../layouts/AuthLayout.astro";
 import RegisterOwnerForm from "../components/features/auth/register-owner-form";
 ---
 
-<AuthLayout
-  title="Załóż konto właściciela"
-  subtitle="Zarządzaj swoimi mieszkaniami w jednym miejscu."
->
+<AuthLayout title="Załóż konto właściciela" subtitle="Zarządzaj swoimi mieszkaniami w jednym miejscu.">
   <RegisterOwnerForm client:load />
 </AuthLayout>
-

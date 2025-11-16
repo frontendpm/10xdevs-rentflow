@@ -3,14 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -57,25 +50,22 @@ export default function RegisterOwnerForm() {
     setGlobalError(null);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/signup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+      const response = await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/auth/v1/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          data: {
+            full_name: values.full_name,
+            role: "owner",
           },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-            data: {
-              full_name: values.full_name,
-              role: "owner",
-            },
-          }),
-        }
-      );
+        }),
+      });
 
       const data = await response.json();
 
@@ -109,8 +99,7 @@ export default function RegisterOwnerForm() {
     } catch (error) {
       console.error("Registration error:", error);
       setGlobalError({
-        message:
-          "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
+        message: "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
       });
     } finally {
       setIsSubmitting(false);
@@ -120,14 +109,8 @@ export default function RegisterOwnerForm() {
   return (
     <div className="space-y-6">
       {globalError && (
-        <div
-          className="rounded-lg border border-destructive/50 bg-destructive/10 p-4"
-          role="alert"
-          aria-live="polite"
-        >
-          <p className="text-sm font-medium text-destructive">
-            {globalError.message}
-          </p>
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4" role="alert" aria-live="polite">
+          <p className="text-sm font-medium text-destructive">{globalError.message}</p>
         </div>
       )}
 
@@ -140,11 +123,7 @@ export default function RegisterOwnerForm() {
               <FormItem>
                 <FormLabel>Imię</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Jan Kowalski"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input placeholder="Jan Kowalski" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -158,12 +137,7 @@ export default function RegisterOwnerForm() {
               <FormItem>
                 <FormLabel>E-mail</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="jan@example.com"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input type="email" placeholder="jan@example.com" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -177,12 +151,7 @@ export default function RegisterOwnerForm() {
               <FormItem>
                 <FormLabel>Hasło</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input type="password" placeholder="••••••••" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -196,12 +165,7 @@ export default function RegisterOwnerForm() {
               <FormItem>
                 <FormLabel>Powtórz hasło</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <Input type="password" placeholder="••••••••" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -214,11 +178,7 @@ export default function RegisterOwnerForm() {
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={isSubmitting}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isSubmitting} />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel className="text-sm font-normal">
@@ -247,20 +207,13 @@ export default function RegisterOwnerForm() {
             )}
           />
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting || !form.formState.isValid}
-          >
+          <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isValid}>
             {isSubmitting ? "Rejestracja..." : "Załóż konto"}
           </Button>
 
           <p className="text-center text-sm text-neutral-600 dark:text-neutral-400">
             Masz już konto?{" "}
-            <a
-              href="/login"
-              className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-            >
+            <a href="/login" className="font-medium text-primary underline underline-offset-4 hover:text-primary/80">
               Zaloguj się
             </a>
           </p>
@@ -269,4 +222,3 @@ export default function RegisterOwnerForm() {
     </div>
   );
 }
-

@@ -1,7 +1,7 @@
-import type { APIContext } from 'astro';
-import { z } from 'zod';
-import { ChargesService } from '@/lib/services/charges.service';
-import { getChargesQuerySchema, createChargeSchema } from '@/lib/validation/charges.validation';
+import type { APIContext } from "astro";
+import { z } from "zod";
+import { ChargesService } from "@/lib/services/charges.service";
+import { getChargesQuerySchema, createChargeSchema } from "@/lib/validation/charges.validation";
 
 export const prerender = false;
 
@@ -36,10 +36,10 @@ export async function GET(context: APIContext): Promise<Response> {
   if (!user) {
     return new Response(
       JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Brak autoryzacji'
+        error: "Unauthorized",
+        message: "Brak autoryzacji",
       }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -48,10 +48,10 @@ export async function GET(context: APIContext): Promise<Response> {
   if (!apartmentId) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Brak ID mieszkania'
+        error: "Bad Request",
+        message: "Brak ID mieszkania",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -60,10 +60,10 @@ export async function GET(context: APIContext): Promise<Response> {
   if (!uuidRegex.test(apartmentId)) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format ID mieszkania'
+        error: "Bad Request",
+        message: "Nieprawidłowy format ID mieszkania",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -77,11 +77,11 @@ export async function GET(context: APIContext): Promise<Response> {
     if (error instanceof z.ZodError) {
       return new Response(
         JSON.stringify({
-          error: 'Validation Error',
-          message: 'Nieprawidłowe parametry zapytania',
-          details: error.flatten().fieldErrors
+          error: "Validation Error",
+          message: "Nieprawidłowe parametry zapytania",
+          details: error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
   }
@@ -89,52 +89,48 @@ export async function GET(context: APIContext): Promise<Response> {
   // 4. Wywołanie serwisu
   try {
     const chargesService = new ChargesService(supabase);
-    const result = await chargesService.getChargesForApartment(
-      apartmentId,
-      validatedParams
-    );
+    const result = await chargesService.getChargesForApartment(apartmentId, validatedParams);
 
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error: any) {
-    console.error('[GET /api/apartments/:id/charges] Error:', {
+    console.error("[GET /api/apartments/:id/charges] Error:", {
       userId: user.id,
       apartmentId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Obsługa specyficznych błędów
-    if (error.message === 'APARTMENT_NOT_FOUND') {
+    if (error.message === "APARTMENT_NOT_FOUND") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Mieszkanie nie zostało znalezione'
+          error: "Not Found",
+          message: "Mieszkanie nie zostało znalezione",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'NO_ACTIVE_LEASE') {
+    if (error.message === "NO_ACTIVE_LEASE") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Brak aktywnego najmu dla tego mieszkania'
+          error: "Not Found",
+          message: "Brak aktywnego najmu dla tego mieszkania",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Błąd ogólny
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Wystąpił błąd podczas pobierania opłat'
+        error: "Internal Server Error",
+        message: "Wystąpił błąd podczas pobierania opłat",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
@@ -170,42 +166,38 @@ export async function POST(context: APIContext): Promise<Response> {
   if (!user) {
     return new Response(
       JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Brak autoryzacji'
+        error: "Unauthorized",
+        message: "Brak autoryzacji",
       }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
 
   // 2. Sprawdzenie czy user jest właścicielem
   // Pobieramy rolę z bazy danych
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
   if (userError || !userData) {
-    console.error('[POST /api/apartments/:id/charges] Błąd pobierania roli:', {
+    console.error("[POST /api/apartments/:id/charges] Błąd pobierania roli:", {
       userId: user.id,
-      error: userError
+      error: userError,
     });
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Błąd weryfikacji użytkownika'
+        error: "Internal Server Error",
+        message: "Błąd weryfikacji użytkownika",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  if (userData.role !== 'owner') {
+  if (userData.role !== "owner") {
     return new Response(
       JSON.stringify({
-        error: 'Forbidden',
-        message: 'Tylko właściciele mogą dodawać opłaty'
+        error: "Forbidden",
+        message: "Tylko właściciele mogą dodawać opłaty",
       }),
-      { status: 403, headers: { 'Content-Type': 'application/json' } }
+      { status: 403, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -214,10 +206,10 @@ export async function POST(context: APIContext): Promise<Response> {
   if (!apartmentId) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Brak ID mieszkania'
+        error: "Bad Request",
+        message: "Brak ID mieszkania",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -226,10 +218,10 @@ export async function POST(context: APIContext): Promise<Response> {
   if (!uuidRegex.test(apartmentId)) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format ID mieszkania'
+        error: "Bad Request",
+        message: "Nieprawidłowy format ID mieszkania",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -240,10 +232,10 @@ export async function POST(context: APIContext): Promise<Response> {
   } catch {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format JSON'
+        error: "Bad Request",
+        message: "Nieprawidłowy format JSON",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -254,11 +246,11 @@ export async function POST(context: APIContext): Promise<Response> {
     if (error instanceof z.ZodError) {
       return new Response(
         JSON.stringify({
-          error: 'Validation Error',
-          message: 'Nieprawidłowe dane',
-          details: error.flatten().fieldErrors
+          error: "Validation Error",
+          message: "Nieprawidłowe dane",
+          details: error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
   }
@@ -266,63 +258,58 @@ export async function POST(context: APIContext): Promise<Response> {
   // 5. Wywołanie serwisu
   try {
     const chargesService = new ChargesService(supabase);
-    const result = await chargesService.createCharge(
-      apartmentId,
-      validatedData,
-      user.id
-    );
+    const result = await chargesService.createCharge(apartmentId, validatedData, user.id);
 
     return new Response(JSON.stringify(result), {
       status: 201,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error: any) {
-    console.error('[POST /api/apartments/:id/charges] Error:', {
+    console.error("[POST /api/apartments/:id/charges] Error:", {
       userId: user.id,
       apartmentId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Obsługa specyficznych błędów
-    if (error.message === 'APARTMENT_NOT_FOUND') {
+    if (error.message === "APARTMENT_NOT_FOUND") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Mieszkanie nie zostało znalezione'
+          error: "Not Found",
+          message: "Mieszkanie nie zostało znalezione",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'FORBIDDEN') {
+    if (error.message === "FORBIDDEN") {
       return new Response(
         JSON.stringify({
-          error: 'Forbidden',
-          message: 'Nie masz uprawnień do dodawania opłat dla tego mieszkania'
+          error: "Forbidden",
+          message: "Nie masz uprawnień do dodawania opłat dla tego mieszkania",
         }),
-        { status: 403, headers: { 'Content-Type': 'application/json' } }
+        { status: 403, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'NO_ACTIVE_LEASE') {
+    if (error.message === "NO_ACTIVE_LEASE") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Brak aktywnego najmu dla tego mieszkania'
+          error: "Not Found",
+          message: "Brak aktywnego najmu dla tego mieszkania",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Błąd ogólny
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Wystąpił błąd podczas tworzenia opłaty'
+        error: "Internal Server Error",
+        message: "Wystąpił błąd podczas tworzenia opłaty",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

@@ -4,30 +4,13 @@ import { z } from "zod";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getAuthHeaders, getAuthToken } from "@/lib/utils/auth";
-import {
-  validateAttachmentFile,
-  FILE_VALIDATION_ERROR_MESSAGES,
-} from "@/lib/utils/file-validation";
+import { validateAttachmentFile, FILE_VALIDATION_ERROR_MESSAGES } from "@/lib/utils/file-validation";
 import type { CreateChargeCommand } from "@/types";
 import { AlertTriangle, FileIcon, Trash2, Upload } from "lucide-react";
 
@@ -45,13 +28,13 @@ interface ChargeFormProps {
 // =============================================================================
 
 // Typ formularza
-type ChargeFormValues = {
+interface ChargeFormValues {
   amount: string;
   dueDate: string;
   type: "rent" | "bill" | "other";
   comment: string;
   attachment: File | null;
-};
+}
 
 const chargeFormSchema = z.object({
   amount: z
@@ -112,9 +95,7 @@ export default function ChargeForm({ apartmentId, apartmentName }: ChargeFormPro
       const validationResult = validateAttachmentFile(file);
 
       if (!validationResult.valid && validationResult.error) {
-        const errorMessage =
-          FILE_VALIDATION_ERROR_MESSAGES[validationResult.error] ||
-          "Nieprawidłowy plik";
+        const errorMessage = FILE_VALIDATION_ERROR_MESSAGES[validationResult.error] || "Nieprawidłowy plik";
         toast.error(errorMessage);
         event.target.value = "";
         return;
@@ -225,9 +206,7 @@ export default function ChargeForm({ apartmentId, apartmentName }: ChargeFormPro
                 "Wystąpił błąd podczas przesyłania załącznika. Opłata została utworzona bez załącznika."
             );
           } else {
-            toast.warning(
-              "Opłata została utworzona, ale wystąpił problem z przesłaniem załącznika."
-            );
+            toast.warning("Opłata została utworzona, ale wystąpił problem z przesłaniem załącznika.");
           }
         }
       }
@@ -288,11 +267,7 @@ export default function ChargeForm({ apartmentId, apartmentName }: ChargeFormPro
               <FormItem>
                 <FormLabel>Data wymagalności</FormLabel>
                 <FormControl>
-                  <Input
-                    type="date"
-                    {...field}
-                    disabled={isSubmitting || !!noActiveLeaseError}
-                  />
+                  <Input type="date" {...field} disabled={isSubmitting || !!noActiveLeaseError} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -365,9 +340,7 @@ export default function ChargeForm({ apartmentId, apartmentName }: ChargeFormPro
                 <div className="flex items-center gap-2">
                   {getFileIcon(selectedFile)}
                   <span className="text-sm font-medium">{selectedFile.name}</span>
-                  <span className="text-xs text-neutral-500">
-                    ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                  </span>
+                  <span className="text-xs text-neutral-500">({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
                 </div>
                 <Button
                   type="button"
@@ -423,10 +396,7 @@ export default function ChargeForm({ apartmentId, apartmentName }: ChargeFormPro
             >
               Anuluj
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting || !form.formState.isValid || !!noActiveLeaseError}
-            >
+            <Button type="submit" disabled={isSubmitting || !form.formState.isValid || !!noActiveLeaseError}>
               {isSubmitting ? "Zapisywanie..." : "Zapisz opłatę"}
             </Button>
           </div>

@@ -36,7 +36,7 @@ export async function GET(context: APIContext): Promise<Response> {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -61,18 +61,14 @@ export async function GET(context: APIContext): Promise<Response> {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
     const { include_archived } = validationResult.data;
 
     // 3. Pobranie roli użytkownika z bazy danych
-    const { data: userData, error: userError } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
     if (userError || !userData) {
       console.error("[GET /api/apartments] Użytkownik nie znaleziony lub błąd bazy:", {
@@ -88,7 +84,7 @@ export async function GET(context: APIContext): Promise<Response> {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -98,10 +94,7 @@ export async function GET(context: APIContext): Promise<Response> {
     let apartments: ApartmentListDTO["apartments"];
 
     if (role === "owner") {
-      apartments = await apartmentService.getApartmentsForOwner(
-        user.id,
-        include_archived,
-      );
+      apartments = await apartmentService.getApartmentsForOwner(user.id, include_archived);
     } else if (role === "tenant") {
       apartments = await apartmentService.getApartmentsForTenant(user.id);
     } else {
@@ -118,7 +111,7 @@ export async function GET(context: APIContext): Promise<Response> {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -126,7 +119,7 @@ export async function GET(context: APIContext): Promise<Response> {
       apartments,
     };
 
-    console.log('[GET /api/apartments] Sending response:', {
+    console.log("[GET /api/apartments] Sending response:", {
       userId: user.id,
       role,
       apartmentsCount: apartments.length,
@@ -153,7 +146,7 @@ export async function GET(context: APIContext): Promise<Response> {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 }
@@ -189,7 +182,7 @@ export async function POST(context: APIContext): Promise<Response> {
       {
         status: 401,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 
@@ -209,7 +202,7 @@ export async function POST(context: APIContext): Promise<Response> {
       status: 201,
       headers: {
         "Content-Type": "application/json",
-        "Location": `/api/apartments/${apartment.id}`,
+        Location: `/api/apartments/${apartment.id}`,
       },
     });
   } catch (error) {
@@ -224,7 +217,7 @@ export async function POST(context: APIContext): Promise<Response> {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -238,7 +231,7 @@ export async function POST(context: APIContext): Promise<Response> {
         {
           status: 403,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -252,7 +245,7 @@ export async function POST(context: APIContext): Promise<Response> {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -271,9 +264,7 @@ export async function POST(context: APIContext): Promise<Response> {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 }
-
-

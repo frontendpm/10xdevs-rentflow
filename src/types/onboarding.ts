@@ -1,6 +1,6 @@
 /**
  * Typy dla widoku Onboardingu
- * 
+ *
  * Ten plik zawiera typy ViewModels używane w kreatorze onboardingu
  * oraz typy walidacji formularzy.
  */
@@ -21,7 +21,7 @@ export interface OnboardingApartmentVM {
  */
 export interface InvitationLinkVM {
   url: string;
-  status: 'idle' | 'loading' | 'ready' | 'error';
+  status: "idle" | "loading" | "ready" | "error";
   errorMessage?: string;
 }
 
@@ -44,4 +44,3 @@ export interface ApartmentFormValues {
   name: string;
   address: string;
 }
-

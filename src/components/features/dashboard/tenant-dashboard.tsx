@@ -1,7 +1,7 @@
-import type { DashboardTenantDTO } from '@/types';
-import { useTenantDashboardViewModel } from './useTenantDashboardViewModel';
-import { TenantSummaryCard } from './tenant-summary-card';
-import { TenantDashboardSections } from './tenant-dashboard-sections';
+import type { DashboardTenantDTO } from "@/types";
+import { useTenantDashboardViewModel } from "./useTenantDashboardViewModel";
+import { TenantSummaryCard } from "./tenant-summary-card";
+import { TenantDashboardSections } from "./tenant-dashboard-sections";
 
 interface TenantDashboardIslandProps {
   dashboard: DashboardTenantDTO;
@@ -19,9 +19,7 @@ export function TenantDashboardIsland({ dashboard }: TenantDashboardIslandProps)
   if (!viewModel.apartmentId) {
     return (
       <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900 dark:bg-amber-950">
-        <p className="text-lg font-semibold text-amber-900 dark:text-amber-100">
-          Brak aktywnego najmu
-        </p>
+        <p className="text-lg font-semibold text-amber-900 dark:text-amber-100">Brak aktywnego najmu</p>
         <p className="mt-2 text-amber-700 dark:text-amber-300">
           Najem dla tego mieszkania został zakończony. Skontaktuj się z właścicielem.
         </p>

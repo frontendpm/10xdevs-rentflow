@@ -1,9 +1,6 @@
-import type { APIContext } from 'astro';
-import { ChargesService } from '@/lib/services/charges.service';
-import {
-  FILE_VALIDATION_ERROR_MESSAGES,
-  FILE_VALIDATION_ERROR_STATUS
-} from '@/lib/utils/file-validation';
+import type { APIContext } from "astro";
+import { ChargesService } from "@/lib/services/charges.service";
+import { FILE_VALIDATION_ERROR_MESSAGES, FILE_VALIDATION_ERROR_STATUS } from "@/lib/utils/file-validation";
 
 export const prerender = false;
 
@@ -39,41 +36,37 @@ export async function POST(context: APIContext): Promise<Response> {
   if (!user) {
     return new Response(
       JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Brak autoryzacji'
+        error: "Unauthorized",
+        message: "Brak autoryzacji",
       }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
 
   // 2. Sprawdzenie czy user jest właścicielem
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
   if (userError || !userData) {
-    console.error('[POST /api/charges/:id/attachment] Błąd pobierania roli:', {
+    console.error("[POST /api/charges/:id/attachment] Błąd pobierania roli:", {
       userId: user.id,
-      error: userError
+      error: userError,
     });
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Błąd weryfikacji użytkownika'
+        error: "Internal Server Error",
+        message: "Błąd weryfikacji użytkownika",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  if (userData.role !== 'owner') {
+  if (userData.role !== "owner") {
     return new Response(
       JSON.stringify({
-        error: 'Forbidden',
-        message: 'Tylko właściciele mogą dodawać załączniki'
+        error: "Forbidden",
+        message: "Tylko właściciele mogą dodawać załączniki",
       }),
-      { status: 403, headers: { 'Content-Type': 'application/json' } }
+      { status: 403, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -82,10 +75,10 @@ export async function POST(context: APIContext): Promise<Response> {
   if (!chargeId) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Brak ID opłaty'
+        error: "Bad Request",
+        message: "Brak ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -94,10 +87,10 @@ export async function POST(context: APIContext): Promise<Response> {
   if (!uuidRegex.test(chargeId)) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format ID opłaty'
+        error: "Bad Request",
+        message: "Nieprawidłowy format ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -108,14 +101,14 @@ export async function POST(context: APIContext): Promise<Response> {
   } catch {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format danych'
+        error: "Bad Request",
+        message: "Nieprawidłowy format danych",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  const file = formData.get('file') as File;
+  const file = formData.get("file") as File;
 
   // 5. Wywołanie serwisu
   try {
@@ -124,15 +117,14 @@ export async function POST(context: APIContext): Promise<Response> {
 
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error: any) {
-    console.error('[POST /api/charges/:id/attachment] Error:', {
+    console.error("[POST /api/charges/:id/attachment] Error:", {
       userId: user.id,
       chargeId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Obsługa błędów walidacji pliku
@@ -140,44 +132,44 @@ export async function POST(context: APIContext): Promise<Response> {
       const errorCode = error.message;
       return new Response(
         JSON.stringify({
-          error: FILE_VALIDATION_ERROR_STATUS[errorCode] === 413 ? 'Payload Too Large' : 'Validation Error',
-          message: FILE_VALIDATION_ERROR_MESSAGES[errorCode]
+          error: FILE_VALIDATION_ERROR_STATUS[errorCode] === 413 ? "Payload Too Large" : "Validation Error",
+          message: FILE_VALIDATION_ERROR_MESSAGES[errorCode],
         }),
         {
           status: FILE_VALIDATION_ERROR_STATUS[errorCode],
-          headers: { 'Content-Type': 'application/json' }
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
 
     // Obsługa innych błędów
-    if (error.message === 'CHARGE_NOT_FOUND') {
+    if (error.message === "CHARGE_NOT_FOUND") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Opłata nie została znaleziona'
+          error: "Not Found",
+          message: "Opłata nie została znaleziona",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'STORAGE_UPLOAD_ERROR') {
+    if (error.message === "STORAGE_UPLOAD_ERROR") {
       return new Response(
         JSON.stringify({
-          error: 'Internal Server Error',
-          message: 'Błąd przesyłania pliku do Storage'
+          error: "Internal Server Error",
+          message: "Błąd przesyłania pliku do Storage",
         }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Błąd ogólny
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Wystąpił błąd podczas przesyłania załącznika'
+        error: "Internal Server Error",
+        message: "Wystąpił błąd podczas przesyłania załącznika",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
@@ -205,41 +197,37 @@ export async function DELETE(context: APIContext): Promise<Response> {
   if (!user) {
     return new Response(
       JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Brak autoryzacji'
+        error: "Unauthorized",
+        message: "Brak autoryzacji",
       }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
 
   // 2. Sprawdzenie czy user jest właścicielem
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
   if (userError || !userData) {
-    console.error('[DELETE /api/charges/:id/attachment] Błąd pobierania roli:', {
+    console.error("[DELETE /api/charges/:id/attachment] Błąd pobierania roli:", {
       userId: user.id,
-      error: userError
+      error: userError,
     });
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Błąd weryfikacji użytkownika'
+        error: "Internal Server Error",
+        message: "Błąd weryfikacji użytkownika",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  if (userData.role !== 'owner') {
+  if (userData.role !== "owner") {
     return new Response(
       JSON.stringify({
-        error: 'Forbidden',
-        message: 'Tylko właściciele mogą usuwać załączniki'
+        error: "Forbidden",
+        message: "Tylko właściciele mogą usuwać załączniki",
       }),
-      { status: 403, headers: { 'Content-Type': 'application/json' } }
+      { status: 403, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -248,10 +236,10 @@ export async function DELETE(context: APIContext): Promise<Response> {
   if (!chargeId) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Brak ID opłaty'
+        error: "Bad Request",
+        message: "Brak ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -260,10 +248,10 @@ export async function DELETE(context: APIContext): Promise<Response> {
   if (!uuidRegex.test(chargeId)) {
     return new Response(
       JSON.stringify({
-        error: 'Bad Request',
-        message: 'Nieprawidłowy format ID opłaty'
+        error: "Bad Request",
+        message: "Nieprawidłowy format ID opłaty",
       }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
@@ -274,43 +262,42 @@ export async function DELETE(context: APIContext): Promise<Response> {
 
     // Success - 204 No Content
     return new Response(null, { status: 204 });
-
   } catch (error: any) {
-    console.error('[DELETE /api/charges/:id/attachment] Error:', {
+    console.error("[DELETE /api/charges/:id/attachment] Error:", {
       userId: user.id,
       chargeId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Obsługa specyficznych błędów
-    if (error.message === 'CHARGE_NOT_FOUND') {
+    if (error.message === "CHARGE_NOT_FOUND") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Opłata nie została znaleziona'
+          error: "Not Found",
+          message: "Opłata nie została znaleziona",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    if (error.message === 'NO_ATTACHMENT') {
+    if (error.message === "NO_ATTACHMENT") {
       return new Response(
         JSON.stringify({
-          error: 'Not Found',
-          message: 'Brak załącznika do usunięcia'
+          error: "Not Found",
+          message: "Brak załącznika do usunięcia",
         }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Błąd ogólny
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'Wystąpił błąd podczas usuwania załącznika'
+        error: "Internal Server Error",
+        message: "Wystąpił błąd podczas usuwania załącznika",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

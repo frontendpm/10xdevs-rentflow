@@ -19,10 +19,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
           return (
             <li key={index} className="flex items-center">
               {index > 0 && (
-                <ChevronRight
-                  className="mx-2 h-4 w-4 text-neutral-400 dark:text-neutral-600"
-                  aria-hidden="true"
-                />
+                <ChevronRight className="mx-2 h-4 w-4 text-neutral-400 dark:text-neutral-600" aria-hidden="true" />
               )}
               {item.href && !isLast ? (
                 <a

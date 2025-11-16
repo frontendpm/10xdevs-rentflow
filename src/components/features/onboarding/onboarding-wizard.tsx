@@ -36,7 +36,7 @@ export default function OnboardingWizard() {
     }
   };
 
-  const canFinish = state.invitation?.status === 'ready';
+  const canFinish = state.invitation?.status === "ready";
 
   return (
     <>
@@ -81,11 +81,7 @@ export default function OnboardingWizard() {
                 >
                   Wstecz
                 </Button>
-                <Button
-                  onClick={finish}
-                  disabled={!canFinish}
-                  className="flex-1"
-                >
+                <Button onClick={finish} disabled={!canFinish} className="flex-1">
                   Zakończ
                 </Button>
               </div>
@@ -104,4 +100,3 @@ export default function OnboardingWizard() {
     </>
   );
 }
-

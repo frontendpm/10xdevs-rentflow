@@ -2,12 +2,12 @@
  * Typy ViewModelowe dla widoku Dashboard właściciela i lokatora
  */
 
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 
 /**
  * ViewModel pojedynczej karty mieszkania na dashboardzie właściciela
  */
-export type OwnerDashboardApartmentCardVM = {
+export interface OwnerDashboardApartmentCardVM {
   /** Identyfikator mieszkania */
   id: string;
   /** Nazwa mieszkania */
@@ -22,17 +22,17 @@ export type OwnerDashboardApartmentCardVM = {
   isOverdue: boolean;
   /** Ścieżka do szczegółów mieszkania */
   href: string;
-};
+}
 
 /**
  * ViewModel całego widoku dashboardu właściciela
  */
-export type OwnerDashboardViewModel = {
+export interface OwnerDashboardViewModel {
   /** Lista kart mieszkań do wyświetlenia */
   apartments: OwnerDashboardApartmentCardVM[];
   /** Czy są jakiekolwiek mieszkania */
   hasApartments: boolean;
-};
+}
 
 // =============================================================================
 // TENANT DASHBOARD VIEW MODELS
@@ -41,7 +41,7 @@ export type OwnerDashboardViewModel = {
 /**
  * ViewModel pojedynczej karty nawigacyjnej na dashboardzie lokatora
  */
-export type TenantDashboardNavCardVM = {
+export interface TenantDashboardNavCardVM {
   /** Tytuł karty (np. "Lista opłat", "Protokół Odbioru") */
   title: string;
   /** Krótki opis karty */
@@ -50,12 +50,12 @@ export type TenantDashboardNavCardVM = {
   href: string;
   /** Ikona karty z lucide-react */
   icon: LucideIcon;
-};
+}
 
 /**
  * ViewModel całego widoku dashboardu lokatora
  */
-export type TenantDashboardViewModel = {
+export interface TenantDashboardViewModel {
   /** Identyfikator mieszkania */
   apartmentId: string;
   /** Nazwa mieszkania */
@@ -74,5 +74,4 @@ export type TenantDashboardViewModel = {
   hasOverdue: boolean;
   /** Lista kart nawigacyjnych */
   navCards: TenantDashboardNavCardVM[];
-};
-
+}

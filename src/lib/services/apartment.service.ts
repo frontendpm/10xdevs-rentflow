@@ -26,10 +26,7 @@ export class ApartmentService {
    * @param userId - ID właściciela (auth.uid())
    * @param includeArchived - czy dołączyć mieszkania z archiwalnymi najmami
    */
-  async getApartmentsForOwner(
-    userId: string,
-    includeArchived: boolean,
-  ): Promise<ApartmentListItemOwnerDTO[]> {
+  async getApartmentsForOwner(userId: string, includeArchived: boolean): Promise<ApartmentListItemOwnerDTO[]> {
     console.log("[ApartmentService.getApartmentsForOwner] Start:", {
       userId,
       includeArchived,
@@ -60,7 +57,7 @@ export class ApartmentService {
     console.log("[ApartmentService.getApartmentsForOwner] Pobrano mieszkania:", {
       userId,
       count: apartments?.length || 0,
-      apartmentIds: apartments?.map(a => a.id) || [],
+      apartmentIds: apartments?.map((a) => a.id) || [],
       timestamp: new Date().toISOString(),
     });
 
@@ -142,10 +139,10 @@ export class ApartmentService {
       })
     );
 
-    console.log('[ApartmentService.getApartmentsForOwner] Final result:', {
+    console.log("[ApartmentService.getApartmentsForOwner] Final result:", {
       userId,
       totalApartments: apartmentItems.length,
-      apartmentsWithLeases: apartmentItems.filter(a => a.lease).length,
+      apartmentsWithLeases: apartmentItems.filter((a) => a.lease).length,
       timestamp: new Date().toISOString(),
     });
 
@@ -157,9 +154,7 @@ export class ApartmentService {
    *
    * @param userId - ID lokatora (auth.uid())
    */
-  async getApartmentsForTenant(
-    userId: string,
-  ): Promise<ApartmentListItemTenantDTO[]> {
+  async getApartmentsForTenant(userId: string): Promise<ApartmentListItemTenantDTO[]> {
     // 1. Pobranie mieszkania lokatora z aktywnym najmem
     const { data: lease, error: leaseError } = await this.supabase
       .from("leases")
@@ -234,63 +229,59 @@ export class ApartmentService {
    * @throws {ForbiddenError} - Jeśli użytkownik nie jest właścicielem
    * @throws {Error} - Jeśli nie udało się utworzyć mieszkania
    */
-  async createApartment(
-    userId: string,
-    command: CreateApartmentCommand,
-  ): Promise<Tables<'apartments'>> {
-    const { data, error: insertError } = await (this.supabase.rpc as any)('create_apartment_rpc', {
+  async createApartment(userId: string, command: CreateApartmentCommand): Promise<Tables<"apartments">> {
+    const { data, error: insertError } = await (this.supabase.rpc as any)("create_apartment_rpc", {
       p_name: command.name,
       p_address: command.address,
       p_owner_id: userId,
-      p_created_by: userId
+      p_created_by: userId,
     });
 
     if (insertError) {
-      console.error('[ApartmentService.createApartment] Błąd tworzenia mieszkania:', {
+      console.error("[ApartmentService.createApartment] Błąd tworzenia mieszkania:", {
         userId,
         error: insertError,
         code: insertError.code,
         message: insertError.message,
         details: insertError.details,
-        hint: insertError.hint
+        hint: insertError.hint,
       });
-      
-      if (insertError.message?.includes('Only owners')) {
-        throw new ForbiddenError('Tylko właściciele mogą dodawać mieszkania');
+
+      if (insertError.message?.includes("Only owners")) {
+        throw new ForbiddenError("Tylko właściciele mogą dodawać mieszkania");
       }
-      
-      if (insertError.message?.includes('Not authenticated')) {
-        throw new ForbiddenError('Brak autoryzacji');
+
+      if (insertError.message?.includes("Not authenticated")) {
+        throw new ForbiddenError("Brak autoryzacji");
       }
-      
+
       throw new Error(`Nie udało się utworzyć mieszkania: ${insertError.message}`);
     }
 
     if (!data) {
-      throw new Error('Nie udało się utworzyć mieszkania - brak danych');
+      throw new Error("Nie udało się utworzyć mieszkania - brak danych");
     }
 
-    return data as unknown as Tables<'apartments'>;
+    return data as unknown as Tables<"apartments">;
   }
 
   /**
    * Pobiera szczegółowe informacje o konkretnym mieszkaniu wraz z danymi o aktywnym najmie.
-   * 
+   *
    * RLS automatycznie filtruje wyniki:
    * - Owner może zobaczyć tylko swoje mieszkania
    * - Tenant może zobaczyć tylko mieszkanie z aktywnym najmem
-   * 
+   *
    * @param apartmentId - UUID mieszkania
    * @returns Dane mieszkania z opcjonalnym lease info lub null jeśli nie znaleziono
    * @throws {Error} - Jeśli wystąpi błąd zapytania do bazy
    */
-  async getApartmentDetails(
-    apartmentId: string
-  ): Promise<ApartmentDetailsDTO | null> {
+  async getApartmentDetails(apartmentId: string): Promise<ApartmentDetailsDTO | null> {
     // Query z LEFT JOIN na aktywny najem i lokatora
     const { data, error } = await this.supabase
-      .from('apartments')
-      .select(`
+      .from("apartments")
+      .select(
+        `
         *,
         leases!left (
           id,
@@ -303,13 +294,14 @@ export class ApartmentService {
             email
           )
         )
-      `)
-      .eq('id', apartmentId)
-      .eq('leases.status', 'active')
+      `
+      )
+      .eq("id", apartmentId)
+      .eq("leases.status", "active")
       .maybeSingle();
 
     if (error) {
-      console.error('[ApartmentService.getApartmentDetails] Błąd pobierania mieszkania:', {
+      console.error("[ApartmentService.getApartmentDetails] Błąd pobierania mieszkania:", {
         apartmentId,
         error,
       });
@@ -352,18 +344,15 @@ export class ApartmentService {
   /**
    * Aktualizuje dane mieszkania (partial update).
    * Tylko właściciel może edytować swoje mieszkanie.
-   * 
+   *
    * @param apartmentId - UUID mieszkania
    * @param command - Dane do aktualizacji (name i/lub address)
    * @returns Zaktualizowane mieszkanie lub null jeśli nie znaleziono/brak dostępu
    * @throws {Error} - Jeśli wystąpi błąd zapytania do bazy
    */
-  async updateApartment(
-    apartmentId: string,
-    command: UpdateApartmentCommand
-  ): Promise<Tables<'apartments'> | null> {
-    const updateData: Partial<Tables<'apartments'>> = {};
-    
+  async updateApartment(apartmentId: string, command: UpdateApartmentCommand): Promise<Tables<"apartments"> | null> {
+    const updateData: Partial<Tables<"apartments">> = {};
+
     if (command.name !== undefined) {
       updateData.name = command.name;
     }
@@ -372,14 +361,14 @@ export class ApartmentService {
     }
 
     const { data, error } = await this.supabase
-      .from('apartments')
+      .from("apartments")
       .update(updateData)
-      .eq('id', apartmentId)
+      .eq("id", apartmentId)
       .select()
       .maybeSingle();
 
     if (error) {
-      console.error('[ApartmentService.updateApartment] Błąd aktualizacji mieszkania:', {
+      console.error("[ApartmentService.updateApartment] Błąd aktualizacji mieszkania:", {
         apartmentId,
         error,
       });
@@ -393,29 +382,23 @@ export class ApartmentService {
    * Usuwa mieszkanie z bazy danych.
    * Tylko właściciel może usunąć swoje mieszkanie.
    * Database trigger zapobiega usunięciu mieszkania z najmami.
-   * 
+   *
    * @param apartmentId - UUID mieszkania
    * @returns true jeśli usunięto, false jeśli nie znaleziono
    * @throws {ApartmentHasLeasesError} - Jeśli mieszkanie ma najmy (trigger)
    * @throws {Error} - Jeśli wystąpi inny błąd bazy danych
    */
   async deleteApartment(apartmentId: string): Promise<boolean> {
-    const { error, count } = await this.supabase
-      .from('apartments')
-      .delete({ count: 'exact' })
-      .eq('id', apartmentId);
+    const { error, count } = await this.supabase.from("apartments").delete({ count: "exact" }).eq("id", apartmentId);
 
     if (error) {
-      if (
-        error.code === 'P0001' ||
-        error.message?.includes('existing leases')
-      ) {
+      if (error.code === "P0001" || error.message?.includes("existing leases")) {
         throw new ApartmentHasLeasesError(
-          'Nie można usunąć mieszkania z istniejącymi najmami. Najpierw usuń wszystkie najmy.'
+          "Nie można usunąć mieszkania z istniejącymi najmami. Najpierw usuń wszystkie najmy."
         );
       }
-      
-      console.error('[ApartmentService.deleteApartment] Błąd usuwania mieszkania:', {
+
+      console.error("[ApartmentService.deleteApartment] Błąd usuwania mieszkania:", {
         apartmentId,
         error,
       });
@@ -428,17 +411,16 @@ export class ApartmentService {
   /**
    * Pobiera podsumowanie mieszkania z metrykami finansowymi.
    * Tylko dla właścicieli.
-   * 
+   *
    * @param apartmentId - UUID mieszkania
    * @returns Podsumowanie mieszkania lub null jeśli nie znaleziono
    * @throws {Error} - Jeśli wystąpi błąd zapytania do bazy
    */
-  async getApartmentSummary(
-    apartmentId: string
-  ): Promise<ApartmentSummaryDTO | null> {
+  async getApartmentSummary(apartmentId: string): Promise<ApartmentSummaryDTO | null> {
     const { data: apartment, error: aptError } = await this.supabase
-      .from('apartments')
-      .select(`
+      .from("apartments")
+      .select(
+        `
         id,
         name,
         address,
@@ -449,13 +431,14 @@ export class ApartmentService {
             full_name
           )
         )
-      `)
-      .eq('id', apartmentId)
-      .eq('leases.status', 'active')
+      `
+      )
+      .eq("id", apartmentId)
+      .eq("leases.status", "active")
       .maybeSingle();
 
     if (aptError) {
-      console.error('[ApartmentService.getApartmentSummary] Błąd pobierania mieszkania:', {
+      console.error("[ApartmentService.getApartmentSummary] Błąd pobierania mieszkania:", {
         apartmentId,
         error: aptError,
       });
@@ -470,35 +453,32 @@ export class ApartmentService {
       total_unpaid: 0,
       total_partially_paid: 0,
       total_overdue: 0,
-      upcoming_charges_count: 0
+      upcoming_charges_count: 0,
     };
 
-    const activeLease = apartment.leases && Array.isArray(apartment.leases) && apartment.leases.length > 0 
-      ? apartment.leases[0] 
-      : null;
+    const activeLease =
+      apartment.leases && Array.isArray(apartment.leases) && apartment.leases.length > 0 ? apartment.leases[0] : null;
 
     if (activeLease) {
       const { data: charges } = await this.supabase
-        .from('charges_with_status')
-        .select('payment_status, remaining_amount, is_overdue, due_date')
-        .eq('lease_id', activeLease.id);
+        .from("charges_with_status")
+        .select("payment_status, remaining_amount, is_overdue, due_date")
+        .eq("lease_id", activeLease.id);
 
       if (charges && charges.length > 0) {
-        const today = new Date().toISOString().split('T')[0];
-        
+        const today = new Date().toISOString().split("T")[0];
+
         financialSummary = {
           total_unpaid: charges
-            .filter(c => c.payment_status === 'unpaid')
+            .filter((c) => c.payment_status === "unpaid")
             .reduce((sum, c) => sum + (c.remaining_amount || 0), 0),
           total_partially_paid: charges
-            .filter(c => c.payment_status === 'partially_paid')
+            .filter((c) => c.payment_status === "partially_paid")
             .reduce((sum, c) => sum + (c.remaining_amount || 0), 0),
-          total_overdue: charges
-            .filter(c => c.is_overdue)
-            .reduce((sum, c) => sum + (c.remaining_amount || 0), 0),
-          upcoming_charges_count: charges
-            .filter(c => c.due_date && c.due_date >= today && c.payment_status !== 'paid')
-            .length
+          total_overdue: charges.filter((c) => c.is_overdue).reduce((sum, c) => sum + (c.remaining_amount || 0), 0),
+          upcoming_charges_count: charges.filter(
+            (c) => c.due_date && c.due_date >= today && c.payment_status !== "paid"
+          ).length,
         };
       }
     }
@@ -507,20 +487,21 @@ export class ApartmentService {
       apartment: {
         id: apartment.id,
         name: apartment.name,
-        address: apartment.address
+        address: apartment.address,
       },
-      lease: activeLease && activeLease.tenant ? {
-        id: activeLease.id,
-        status: activeLease.status,
-        tenant: {
-          full_name: activeLease.tenant.full_name
-        }
-      } : undefined,
-      financial_summary: financialSummary
+      lease:
+        activeLease && activeLease.tenant
+          ? {
+              id: activeLease.id,
+              status: activeLease.status,
+              tenant: {
+                full_name: activeLease.tenant.full_name,
+              },
+            }
+          : undefined,
+      financial_summary: financialSummary,
     };
 
     return summary;
   }
 }
-
-

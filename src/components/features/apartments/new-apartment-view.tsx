@@ -9,9 +9,7 @@ interface NewApartmentViewProps {
   redirectPath?: string;
 }
 
-export default function NewApartmentView({
-  redirectPath = "/dashboard",
-}: NewApartmentViewProps) {
+export default function NewApartmentView({ redirectPath = "/dashboard" }: NewApartmentViewProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (values: ApartmentFormValues) => {
@@ -63,9 +61,7 @@ export default function NewApartmentView({
       }, 500);
     } catch (error) {
       console.error("[NewApartmentView] Błąd podczas tworzenia mieszkania:", error);
-      toast.error(
-        "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie."
-      );
+      toast.error("Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.");
     } finally {
       setIsSubmitting(false);
     }
@@ -73,17 +69,10 @@ export default function NewApartmentView({
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Breadcrumbs
-        items={[
-          { label: "Dashboard", href: "/dashboard" },
-          { label: "Dodaj mieszkanie" },
-        ]}
-      />
+      <Breadcrumbs items={[{ label: "Dashboard", href: "/dashboard" }, { label: "Dodaj mieszkanie" }]} />
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
-          Dodaj mieszkanie
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">Dodaj mieszkanie</h1>
         <p className="mt-2 text-neutral-600 dark:text-neutral-400">
           Uzupełnij dane nowego mieszkania, aby dodać je do swojego dashboardu.
         </p>

@@ -13,11 +13,7 @@ if (!user) {
 const supabase = Astro.locals.supabase;
 
 // Sprawdzenie roli użytkownika - tylko właściciele mogą dodawać mieszkania
-const { data: userData, error: userError } = await supabase
-  .from("users")
-  .select("role")
-  .eq("id", user.id)
-  .single();
+const { data: userData, error: userError } = await supabase.from("users").select("role").eq("id", user.id).single();
 
 // Guard clause - sprawdzenie czy użytkownik istnieje w bazie
 if (userError || !userData) {

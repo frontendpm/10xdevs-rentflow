@@ -71,8 +71,7 @@ export function useApartmentCharges(apartmentId: string): UseApartmentChargesRet
         noActiveLease: false,
       });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd";
+      const message = error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd";
 
       setState({
         chargesByMonth: null,
